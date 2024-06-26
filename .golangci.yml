@@ -1,0 +1,38 @@
+run:
+  timeout: 5m
+
+linters-settings:
+  cyclop:
+    max-complexity: 11
+  depguard:
+    rules:
+      main:
+        list-mode: lax
+        allow:
+          - $gostd
+          - github.com/prometheus
+  gofumpt:
+    module-path: Owl
+
+
+linters:
+  fast: false
+  enable-all: true
+  disable:
+    - dupl
+#    - gochecknoglobals
+#    - gochecknoinits
+#    - gosec
+#    - lll
+#    - funlen
+#    - wsl
+#    - gomnd
+#    - testpackage
+#    - goerr113
+#    - godot
+#    - paralleltest
+#    - exhaustivestruct
+#    - wrapcheck
+#    - forbidigo
+#    - exhaustruct
+#    - goimports
