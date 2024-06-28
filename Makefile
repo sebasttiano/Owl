@@ -29,3 +29,6 @@ build-agent: ## Build agent component
 build-server: ## Build server component
 	go build -o ./cmd/server/server ./cmd/server/
 
+
+proto: ## Generate grpc files
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./internal/proto/owl.proto

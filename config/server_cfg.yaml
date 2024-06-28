@@ -1,0 +1,12 @@
+database:
+  username: "owl"
+  password: "sookoh7Eishe"
+  host: "localhost"
+  port: 5432
+  name: "owl"
+  sslmode: "disable"
+socket:
+  host: "localhost"
+  port: 8081
+log:
+  level: "info"

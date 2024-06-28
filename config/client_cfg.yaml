@@ -1,0 +1,9 @@
+
+server:
+  host: "localhost"
+  port: 8081
+
+cert:
+  ca: "cert/CertAuth.crt"
+  cert: "cert/client.crt"
+  key: "cert/client.key"
