@@ -9,7 +9,6 @@ import (
 	"github.com/sebasttiano/Owl/internal/logger"
 	"github.com/sebasttiano/Owl/internal/repository"
 	"github.com/sebasttiano/Owl/internal/server"
-	"github.com/sebasttiano/Owl/internal/service"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
@@ -44,9 +43,7 @@ func Run() {
 	wg := &sync.WaitGroup{}
 
 	repo := repository.NewDBStorage(conn)
-	serviceSettings := &service.ServiceSettings{}
-	srv := service.NewService(repo, serviceSettings)
-	grpcSrv := server.NewGRPSServer(srv)
+	grpcSrv := server.NewGRPSServer(repo)
 
 	wg.Add(1)
 	go grpcSrv.Start(cfg.GetAddress())

@@ -7,7 +7,11 @@
 package proto
 
 import (
+	context "context"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -15,53 +19,531 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-const ()
+const (
+	Auth_Register_FullMethodName = "/main.Auth/Register"
+	Auth_Login_FullMethodName    = "/main.Auth/Login"
+)
 
-// KeeperClient is the client API for Keeper service.
+// AuthClient is the client API for Auth service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type KeeperClient interface {
+type AuthClient interface {
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 }
 
-type keeperClient struct {
+type authClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewKeeperClient(cc grpc.ClientConnInterface) KeeperClient {
-	return &keeperClient{cc}
+func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
+	return &authClient{cc}
 }
 
-// KeeperServer is the server API for Keeper service.
-// All implementations must embed UnimplementedKeeperServer
+func (c *authClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, Auth_Register_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, Auth_Login_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AuthServer is the server API for Auth service.
+// All implementations must embed UnimplementedAuthServer
 // for forward compatibility
-type KeeperServer interface {
-	mustEmbedUnimplementedKeeperServer()
+type AuthServer interface {
+	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	mustEmbedUnimplementedAuthServer()
 }
 
-// UnimplementedKeeperServer must be embedded to have forward compatible implementations.
-type UnimplementedKeeperServer struct {
+// UnimplementedAuthServer must be embedded to have forward compatible implementations.
+type UnimplementedAuthServer struct {
 }
 
-func (UnimplementedKeeperServer) mustEmbedUnimplementedKeeperServer() {}
+func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
-// UnsafeKeeperServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to KeeperServer will
+// UnsafeAuthServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServer will
 // result in compilation errors.
-type UnsafeKeeperServer interface {
-	mustEmbedUnimplementedKeeperServer()
+type UnsafeAuthServer interface {
+	mustEmbedUnimplementedAuthServer()
 }
 
-func RegisterKeeperServer(s grpc.ServiceRegistrar, srv KeeperServer) {
-	s.RegisterService(&Keeper_ServiceDesc, srv)
+func RegisterAuthServer(s grpc.ServiceRegistrar, srv AuthServer) {
+	s.RegisterService(&Auth_ServiceDesc, srv)
 }
 
-// Keeper_ServiceDesc is the grpc.ServiceDesc for Keeper service.
+func _Auth_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).Register(ctx, req.(*RegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Keeper_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "main.Keeper",
-	HandlerType: (*KeeperServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "internal/proto/owl.proto",
+var Auth_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "main.Auth",
+	HandlerType: (*AuthServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Register",
+			Handler:    _Auth_Register_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _Auth_Login_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "internal/proto/owl.proto",
+}
+
+const (
+	Binary_SetBinary_FullMethodName      = "/main.Binary/SetBinary"
+	Binary_GetBinary_FullMethodName      = "/main.Binary/GetBinary"
+	Binary_GetAllBinaries_FullMethodName = "/main.Binary/GetAllBinaries"
+	Binary_DeleteBinary_FullMethodName   = "/main.Binary/DeleteBinary"
+)
+
+// BinaryClient is the client API for Binary service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type BinaryClient interface {
+	SetBinary(ctx context.Context, in *SetBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetBinary(ctx context.Context, in *GetBinaryRequest, opts ...grpc.CallOption) (*GetBinaryResponse, error)
+	GetAllBinaries(ctx context.Context, in *GetAllBinariesRequest, opts ...grpc.CallOption) (*GetAllBinariesResponse, error)
+	DeleteBinary(ctx context.Context, in *DeleteBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type binaryClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewBinaryClient(cc grpc.ClientConnInterface) BinaryClient {
+	return &binaryClient{cc}
+}
+
+func (c *binaryClient) SetBinary(ctx context.Context, in *SetBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Binary_SetBinary_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *binaryClient) GetBinary(ctx context.Context, in *GetBinaryRequest, opts ...grpc.CallOption) (*GetBinaryResponse, error) {
+	out := new(GetBinaryResponse)
+	err := c.cc.Invoke(ctx, Binary_GetBinary_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *binaryClient) GetAllBinaries(ctx context.Context, in *GetAllBinariesRequest, opts ...grpc.CallOption) (*GetAllBinariesResponse, error) {
+	out := new(GetAllBinariesResponse)
+	err := c.cc.Invoke(ctx, Binary_GetAllBinaries_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *binaryClient) DeleteBinary(ctx context.Context, in *DeleteBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Binary_DeleteBinary_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// BinaryServer is the server API for Binary service.
+// All implementations must embed UnimplementedBinaryServer
+// for forward compatibility
+type BinaryServer interface {
+	SetBinary(context.Context, *SetBinaryRequest) (*emptypb.Empty, error)
+	GetBinary(context.Context, *GetBinaryRequest) (*GetBinaryResponse, error)
+	GetAllBinaries(context.Context, *GetAllBinariesRequest) (*GetAllBinariesResponse, error)
+	DeleteBinary(context.Context, *DeleteBinaryRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedBinaryServer()
+}
+
+// UnimplementedBinaryServer must be embedded to have forward compatible implementations.
+type UnimplementedBinaryServer struct {
+}
+
+func (UnimplementedBinaryServer) SetBinary(context.Context, *SetBinaryRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetBinary not implemented")
+}
+func (UnimplementedBinaryServer) GetBinary(context.Context, *GetBinaryRequest) (*GetBinaryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBinary not implemented")
+}
+func (UnimplementedBinaryServer) GetAllBinaries(context.Context, *GetAllBinariesRequest) (*GetAllBinariesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllBinaries not implemented")
+}
+func (UnimplementedBinaryServer) DeleteBinary(context.Context, *DeleteBinaryRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBinary not implemented")
+}
+func (UnimplementedBinaryServer) mustEmbedUnimplementedBinaryServer() {}
+
+// UnsafeBinaryServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to BinaryServer will
+// result in compilation errors.
+type UnsafeBinaryServer interface {
+	mustEmbedUnimplementedBinaryServer()
+}
+
+func RegisterBinaryServer(s grpc.ServiceRegistrar, srv BinaryServer) {
+	s.RegisterService(&Binary_ServiceDesc, srv)
+}
+
+func _Binary_SetBinary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetBinaryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BinaryServer).SetBinary(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Binary_SetBinary_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BinaryServer).SetBinary(ctx, req.(*SetBinaryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Binary_GetBinary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBinaryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BinaryServer).GetBinary(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Binary_GetBinary_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BinaryServer).GetBinary(ctx, req.(*GetBinaryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Binary_GetAllBinaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllBinariesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BinaryServer).GetAllBinaries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Binary_GetAllBinaries_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BinaryServer).GetAllBinaries(ctx, req.(*GetAllBinariesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Binary_DeleteBinary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteBinaryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BinaryServer).DeleteBinary(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Binary_DeleteBinary_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BinaryServer).DeleteBinary(ctx, req.(*DeleteBinaryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Binary_ServiceDesc is the grpc.ServiceDesc for Binary service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Binary_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "main.Binary",
+	HandlerType: (*BinaryServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SetBinary",
+			Handler:    _Binary_SetBinary_Handler,
+		},
+		{
+			MethodName: "GetBinary",
+			Handler:    _Binary_GetBinary_Handler,
+		},
+		{
+			MethodName: "GetAllBinaries",
+			Handler:    _Binary_GetAllBinaries_Handler,
+		},
+		{
+			MethodName: "DeleteBinary",
+			Handler:    _Binary_DeleteBinary_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "internal/proto/owl.proto",
+}
+
+const (
+	Text_SetText_FullMethodName        = "/main.Text/SetText"
+	Text_GetText_FullMethodName        = "/main.Text/GetText"
+	Text_GetAllBinaries_FullMethodName = "/main.Text/GetAllBinaries"
+	Text_DeleteText_FullMethodName     = "/main.Text/DeleteText"
+)
+
+// TextClient is the client API for Text service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type TextClient interface {
+	SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error)
+	GetAllBinaries(ctx context.Context, in *GetAllTextsRequest, opts ...grpc.CallOption) (*GetAllTextsResponse, error)
+	DeleteText(ctx context.Context, in *DeleteTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+}
+
+type textClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewTextClient(cc grpc.ClientConnInterface) TextClient {
+	return &textClient{cc}
+}
+
+func (c *textClient) SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Text_SetText_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *textClient) GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error) {
+	out := new(GetTextResponse)
+	err := c.cc.Invoke(ctx, Text_GetText_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *textClient) GetAllBinaries(ctx context.Context, in *GetAllTextsRequest, opts ...grpc.CallOption) (*GetAllTextsResponse, error) {
+	out := new(GetAllTextsResponse)
+	err := c.cc.Invoke(ctx, Text_GetAllBinaries_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *textClient) DeleteText(ctx context.Context, in *DeleteTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Text_DeleteText_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TextServer is the server API for Text service.
+// All implementations must embed UnimplementedTextServer
+// for forward compatibility
+type TextServer interface {
+	SetText(context.Context, *SetTextRequest) (*emptypb.Empty, error)
+	GetText(context.Context, *GetTextRequest) (*GetTextResponse, error)
+	GetAllBinaries(context.Context, *GetAllTextsRequest) (*GetAllTextsResponse, error)
+	DeleteText(context.Context, *DeleteTextRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedTextServer()
+}
+
+// UnimplementedTextServer must be embedded to have forward compatible implementations.
+type UnimplementedTextServer struct {
+}
+
+func (UnimplementedTextServer) SetText(context.Context, *SetTextRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetText not implemented")
+}
+func (UnimplementedTextServer) GetText(context.Context, *GetTextRequest) (*GetTextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetText not implemented")
+}
+func (UnimplementedTextServer) GetAllBinaries(context.Context, *GetAllTextsRequest) (*GetAllTextsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllBinaries not implemented")
+}
+func (UnimplementedTextServer) DeleteText(context.Context, *DeleteTextRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteText not implemented")
+}
+func (UnimplementedTextServer) mustEmbedUnimplementedTextServer() {}
+
+// UnsafeTextServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TextServer will
+// result in compilation errors.
+type UnsafeTextServer interface {
+	mustEmbedUnimplementedTextServer()
+}
+
+func RegisterTextServer(s grpc.ServiceRegistrar, srv TextServer) {
+	s.RegisterService(&Text_ServiceDesc, srv)
+}
+
+func _Text_SetText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TextServer).SetText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Text_SetText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TextServer).SetText(ctx, req.(*SetTextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Text_GetText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TextServer).GetText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Text_GetText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TextServer).GetText(ctx, req.(*GetTextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Text_GetAllBinaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllTextsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TextServer).GetAllBinaries(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Text_GetAllBinaries_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TextServer).GetAllBinaries(ctx, req.(*GetAllTextsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Text_DeleteText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TextServer).DeleteText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Text_DeleteText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TextServer).DeleteText(ctx, req.(*DeleteTextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Text_ServiceDesc is the grpc.ServiceDesc for Text service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Text_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "main.Text",
+	HandlerType: (*TextServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SetText",
+			Handler:    _Text_SetText_Handler,
+		},
+		{
+			MethodName: "GetText",
+			Handler:    _Text_GetText_Handler,
+		},
+		{
+			MethodName: "GetAllBinaries",
+			Handler:    _Text_GetAllBinaries_Handler,
+		},
+		{
+			MethodName: "DeleteText",
+			Handler:    _Text_DeleteText_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "internal/proto/owl.proto",
 }

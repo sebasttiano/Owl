@@ -21,9 +21,13 @@ type GRPSServer struct {
 }
 
 // NewGRPSServer конструктор для gRPC сервера
-func NewGRPSServer(service *service.Service) *GRPSServer {
+func NewGRPSServer(repo service.Repository) *GRPSServer {
 	s := grpc.NewServer(grpc.UnaryInterceptor(logging.UnaryServerInterceptor(handlers.InterceptorLogger(logger.Log))))
-	pb.RegisterKeeperServer(s, &handlers.KeeperServer{Service: service})
+	pb.RegisterAuthServer(s, &handlers.KeeperServer{
+		Auth:   service.NewAuthService(&repo),
+		Binary: service.NewBinaryService(&repo),
+		Text:   service.NewTextService(&repo),
+	})
 	return &GRPSServer{
 		srv: s,
 	}

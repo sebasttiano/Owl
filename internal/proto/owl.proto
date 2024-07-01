@@ -1,10 +1,107 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
 package main;
 
 option go_package = "github.com/sebasttiano/Owl/internal/proto";
 
-service Keeper {
+message RegisterRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message RegisterResponse {
+}
+
+message LoginRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+}
+
+service Auth {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+}
+
+message BinaryMsg {
+  bytes data = 1;
+  string description = 2;
+}
+
+message SetBinaryRequest {
+  string  token = 1;
+  BinaryMsg  binary = 2;
+}
+
+message GetBinaryRequest {
+  string token = 1;
+  int32 id = 2;
+}
+
+message GetBinaryResponse {
+  BinaryMsg binary = 1;
+}
+
+message GetAllBinariesRequest {
+  string token = 1;
+}
+
+message GetAllBinariesResponse {
+  repeated BinaryMsg binaries = 1;
+}
+
+message DeleteBinaryRequest {
+  string token = 1;
+  int32 id = 2;
+}
+
+service Binary {
+  rpc SetBinary(SetBinaryRequest) returns (google.protobuf.Empty);
+  rpc GetBinary(GetBinaryRequest) returns (GetBinaryResponse);
+  rpc GetAllBinaries(GetAllBinariesRequest) returns (GetAllBinariesResponse);
+  rpc DeleteBinary(DeleteBinaryRequest) returns (google.protobuf.Empty);
 }
 
 
+message TextMsg {
+  string text = 1;
+  string description = 2;
+}
+
+message SetTextRequest {
+  string  token = 1;
+  TextMsg text = 2;
+}
+
+message GetTextRequest {
+  string token = 1;
+  int32 id = 2;
+}
+
+message GetTextResponse {
+  TextMsg text = 1;
+}
+
+message GetAllTextsRequest {
+  string token = 1;
+}
+
+message GetAllTextsResponse {
+  repeated TextMsg texts = 1;
+}
+
+message DeleteTextRequest {
+  string token = 1;
+  int32 id = 2;
+}
+
+service Text {
+  rpc SetText(SetTextRequest) returns (google.protobuf.Empty);
+  rpc GetText(GetTextRequest) returns (GetTextResponse);
+  rpc GetAllBinaries(GetAllTextsRequest) returns (GetAllTextsResponse);
+  rpc DeleteText(DeleteTextRequest) returns (google.protobuf.Empty);
+}

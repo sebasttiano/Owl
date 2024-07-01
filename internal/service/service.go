@@ -3,23 +3,26 @@ package service
 type Repository interface {
 }
 
-type ServiceSettings struct {
+type AuthService struct {
+	Repo *Repository
 }
 
-//type ServicePools struct {
-//	MainPool,
-//	AwaitPool worker.Pool
-//}
-
-type Service struct {
-	Repo     Repository
-	settings *ServiceSettings
-	//pools    *ServicePools
+func NewAuthService(repo *Repository) *AuthService {
+	return &AuthService{Repo: repo}
 }
 
-func NewService(repo Repository, settings *ServiceSettings) *Service {
-	return &Service{
-		Repo:     repo,
-		settings: settings,
-	}
+type BinaryService struct {
+	Repo *Repository
+}
+
+func NewBinaryService(repo *Repository) *BinaryService {
+	return &BinaryService{Repo: repo}
+}
+
+type TextService struct {
+	Repo *Repository
+}
+
+func NewTextService(repo *Repository) *TextService {
+	return &TextService{Repo: repo}
 }

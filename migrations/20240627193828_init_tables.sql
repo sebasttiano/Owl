@@ -1,5 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
+
+CREATE TYPE resource_type AS ENUM ('BINARY', 'TEXT', 'CARD', 'PASSWORD');
+
 CREATE TABLE IF NOT EXISTS users(
                                     id UUID DEFAULT gen_random_uuid(),
                                     name VARCHAR(255),
@@ -18,13 +21,12 @@ CREATE TABLE IF NOT EXISTS pieces(
 );
 
 CREATE TABLE IF NOT EXISTS resources(
-                                      id UUID DEFAULT gen_random_uuid(),
+                                      id serial PRIMARY KEY ,
                                       piece_uuid UUID,
                                       user_id UUID,
                                       data BYTEA,
-                                      type INT,
+                                      type resource_type,
                                       meta TEXT,
-                                      PRIMARY KEY(id),
                                       CONSTRAINT fk_user
                                           FOREIGN KEY(user_id)
                                               REFERENCES users(id)
@@ -43,4 +45,5 @@ CREATE TABLE IF NOT EXISTS resources(
 DROP TABLE IF EXISTS resources;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS pieces;
+DROP TYPE resource_type;
 -- +goose StatementEnd
