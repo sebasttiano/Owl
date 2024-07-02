@@ -5,8 +5,10 @@ database:
   port: 5432
   name: "owl"
   sslmode: "disable"
-socket:
+server:
   host: "localhost"
   port: 8081
+  secret: "Ieti6ahzi4xoh3ohqu0b"
+  token_duration: 300
 log:
   level: "info"

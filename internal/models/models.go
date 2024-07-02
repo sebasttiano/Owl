@@ -8,10 +8,10 @@ const (
 )
 
 type User struct {
-	ID           string
-	Name         string `json:"name" valid:"required,type(string)"`
-	Password     string `json:"password" valid:"required,type(string)"`
-	RegisteredAT string
+	ID             int
+	Name           string `json:"name" valid:"required,type(string)"`
+	HashedPassword string `json:"password" valid:"required,type(string)"`
+	RegisteredAT   string
 }
 
 type Resource struct {

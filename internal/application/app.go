@@ -14,6 +14,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 )
 
 func Run() {
@@ -43,7 +44,8 @@ func Run() {
 	wg := &sync.WaitGroup{}
 
 	repo := repository.NewDBStorage(conn)
-	grpcSrv := server.NewGRPSServer(repo)
+	settings := &server.GRPSServerSettings{SecretKey: cfg.Server.Secret, TokenDuration: time.Duration(cfg.Server.TokenDuration) * time.Second}
+	grpcSrv := server.NewGRPSServer(repo, settings)
 
 	wg.Add(1)
 	go grpcSrv.Start(cfg.GetAddress())

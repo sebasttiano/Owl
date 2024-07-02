@@ -3,10 +3,11 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"net"
 	"sync"
+	"time"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/sebasttiano/Owl/internal/handlers"
 	"github.com/sebasttiano/Owl/internal/logger"
 	pb "github.com/sebasttiano/Owl/internal/proto"
@@ -15,19 +16,32 @@ import (
 	"google.golang.org/grpc"
 )
 
+type GRPSServerSettings struct {
+	SecretKey     string
+	TokenDuration time.Duration
+}
+
 // GRPSServer реалиузет gRPC сервер.
 type GRPSServer struct {
 	srv *grpc.Server
 }
 
 // NewGRPSServer конструктор для gRPC сервера
-func NewGRPSServer(repo service.Repository) *GRPSServer {
-	s := grpc.NewServer(grpc.UnaryInterceptor(logging.UnaryServerInterceptor(handlers.InterceptorLogger(logger.Log))))
-	pb.RegisterAuthServer(s, &handlers.KeeperServer{
-		Auth:   service.NewAuthService(&repo),
-		Binary: service.NewBinaryService(&repo),
-		Text:   service.NewTextService(&repo),
+func NewGRPSServer(repo service.Repository, settings *GRPSServerSettings) *GRPSServer {
+	j := handlers.NewJWTManager(settings.SecretKey, settings.TokenDuration)
+	authInterceptor := handlers.NewAuthInterceptor(j)
+	s := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			logging.UnaryServerInterceptor(handlers.InterceptorLogger(logger.Log)),
+			authInterceptor.Unary(),
+		),
+	)
+	pb.RegisterAuthServer(s, &handlers.AuthServer{
+		Auth:     service.NewAuthService(repo),
+		JManager: j,
 	})
+	pb.RegisterBinaryServer(s, &handlers.BinaryServer{Binary: service.NewBinaryService(&repo)})
+	pb.RegisterTextServer(s, &handlers.TextServer{Text: service.NewTextService(&repo)})
 	return &GRPSServer{
 		srv: s,
 	}

@@ -2,10 +2,20 @@ package handlers
 
 import (
 	"context"
-
+	"errors"
+	"fmt"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+	"strconv"
 )
+
+var ErrNoMetadata = errors.New("metadata is not provided")
+var ErrNoAccessToken = errors.New("authorization token is not provided")
 
 func InterceptorLogger(l *zap.Logger) logging.Logger {
 	return logging.LoggerFunc(func(_ context.Context, lvl logging.Level, msg string, fields ...any) {
@@ -42,4 +52,64 @@ func InterceptorLogger(l *zap.Logger) logging.Logger {
 			logger.Info(msg)
 		}
 	})
+}
+
+type AuthInterceptor struct {
+	jwtManager       *JWTManager
+	whitelistMethods map[string]bool
+}
+
+func NewAuthInterceptor(jwtManager *JWTManager) *AuthInterceptor {
+	return &AuthInterceptor{jwtManager, map[string]bool{"Login": true}}
+}
+
+func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req interface{},
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (interface{}, error) {
+		logger.Log.Info(fmt.Sprintf("--> unary interceptor: %s", info.FullMethod))
+		claims, err := i.authorize(ctx, info.FullMethod)
+		if err != nil {
+			return nil, err
+		}
+
+		// Set user id to metadata
+		md, ok := metadata.FromIncomingContext(ctx)
+		if ok {
+			md.Append("user-id", strconv.Itoa(claims.ID))
+		}
+
+		newCtx := metadata.NewIncomingContext(ctx, md)
+		return handler(newCtx, req)
+	}
+}
+
+func (i *AuthInterceptor) authorize(ctx context.Context, method string) (*Claims, error) {
+	fmt.Println(method)
+	_, ok := i.whitelistMethods[method]
+	if ok {
+		// everyone can access
+		return nil, nil
+	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(codes.Unauthenticated, ErrNoMetadata.Error())
+	}
+
+	values := md["authorization"]
+	if len(values) == 0 {
+		return nil, status.Errorf(codes.Unauthenticated, ErrNoAccessToken.Error())
+	}
+
+	accessToken := values[0]
+	claims, err := i.jwtManager.Verify(accessToken)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "%w: %v", ErrInvalidToken, err)
+	}
+
+	return claims, nil
 }

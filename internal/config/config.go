@@ -7,10 +7,12 @@ import (
 
 type ServerConfig struct {
 	Server struct {
-		Host   string `yaml:"host" env:"SERVER_HOST" env-default:"localhost"`
-		Port   int    `yaml:"port" env:"SERVER_PORT" env-default:"8081"`
-		Secure bool   `yaml:"secure" env:"SERVER_SECURE" env-default:"false"`
-	} `yaml:"socket"`
+		Host          string `yaml:"host" env:"SERVER_HOST" env-default:"localhost"`
+		Port          int    `yaml:"port" env:"SERVER_PORT" env-default:"8081"`
+		Secure        bool   `yaml:"secure" env:"SERVER_SECURE" env-default:"false"`
+		Secret        string `yaml:"secret" env:"SERVER_SECRET" env-default:""`
+		TokenDuration int    `yaml:"token_duration" env:"TOKEN_DURATION" env-default:"300"`
+	} `yaml:"server"`
 	Database struct {
 		Host     string `yaml:"host" env:"HOST" env-default:"localhost"`
 		Port     int    `yaml:"port" env:"PORT" env-default:"5432"`
@@ -47,8 +49,8 @@ type ClientConfig struct {
 	} `yaml:"server"`
 	Cert struct {
 		CA   string `yaml:"ca" env:"CA_PATH" env-default:"cert/CertAuth.crt"`
-		Cert string `yaml:"cert" env:"CLIENT_CERT_PATH" env-default:"cert/client.crt"`
-		Key  string `yaml:"key" env:"CLIENT_KEY_PATH" env-default:"cert/client.key"`
+		Cert string `yaml:"cert" env:"CLIENT_CERT_PATH" env-default:"cert/cli.crt"`
+		Key  string `yaml:"key" env:"CLIENT_KEY_PATH" env-default:"cert/cli.key"`
 	} `yaml:"cert"`
 }
 
@@ -56,7 +58,7 @@ func NewClientConfig() (*ClientConfig, error) {
 	config := ClientConfig{}
 
 	if err := cleanenv.ReadConfig("./client_cfg.yaml", &config); err != nil {
-		return nil, fmt.Errorf("cannot read client config: %s", err)
+		return nil, fmt.Errorf("cannot read cli config: %s", err)
 	}
 
 	return &config, nil

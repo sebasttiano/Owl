@@ -5,5 +5,5 @@ server:
 
 cert:
   ca: "cert/CertAuth.crt"
-  cert: "cert/client.crt"
-  key: "cert/client.key"
+  cert: "cert/cli.crt"
+  key: "cert/cli.key"

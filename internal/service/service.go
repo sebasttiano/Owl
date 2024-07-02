@@ -1,13 +1,25 @@
 package service
 
+import (
+	"context"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/sebasttiano/Owl/internal/models"
+)
+
+// pgError алиас для *pgconn.PgError
+var pgError *pgconn.PgError
+
 type Repository interface {
+	GetUser(ctx context.Context, user *models.User) error
+	GetUserByID(ctx context.Context, user *models.User) error
+	AddUser(ctx context.Context, user *models.User) error
 }
 
 type AuthService struct {
-	Repo *Repository
+	Repo Repository
 }
 
-func NewAuthService(repo *Repository) *AuthService {
+func NewAuthService(repo Repository) *AuthService {
 	return &AuthService{Repo: repo}
 }
 

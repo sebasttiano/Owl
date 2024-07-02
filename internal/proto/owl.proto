@@ -10,9 +10,6 @@ message RegisterRequest {
   string password = 2;
 }
 
-message RegisterResponse {
-}
-
 message LoginRequest {
   string name = 1;
   string password = 2;
@@ -23,7 +20,7 @@ message LoginResponse {
 }
 
 service Auth {
-  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Register(RegisterRequest) returns (google.protobuf.Empty);
   rpc Login(LoginRequest) returns (LoginResponse);
 }
 
@@ -33,12 +30,10 @@ message BinaryMsg {
 }
 
 message SetBinaryRequest {
-  string  token = 1;
   BinaryMsg  binary = 2;
 }
 
 message GetBinaryRequest {
-  string token = 1;
   int32 id = 2;
 }
 
@@ -46,23 +41,18 @@ message GetBinaryResponse {
   BinaryMsg binary = 1;
 }
 
-message GetAllBinariesRequest {
-  string token = 1;
-}
-
 message GetAllBinariesResponse {
   repeated BinaryMsg binaries = 1;
 }
 
 message DeleteBinaryRequest {
-  string token = 1;
   int32 id = 2;
 }
 
 service Binary {
   rpc SetBinary(SetBinaryRequest) returns (google.protobuf.Empty);
   rpc GetBinary(GetBinaryRequest) returns (GetBinaryResponse);
-  rpc GetAllBinaries(GetAllBinariesRequest) returns (GetAllBinariesResponse);
+  rpc GetAllBinaries(google.protobuf.Empty) returns (GetAllBinariesResponse);
   rpc DeleteBinary(DeleteBinaryRequest) returns (google.protobuf.Empty);
 }
 

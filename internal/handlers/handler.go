@@ -3,11 +3,29 @@ package handlers
 import (
 	"context"
 	"github.com/sebasttiano/Owl/internal/models"
+	pb "github.com/sebasttiano/Owl/internal/proto"
 )
 
+type AuthServer struct {
+	Auth     Authenticator
+	JManager *JWTManager
+	pb.UnimplementedAuthServer
+}
+
+type BinaryServer struct {
+	Binary BinaryServ
+	pb.UnimplementedBinaryServer
+}
+
+type TextServer struct {
+	Text TextServ
+	pb.UnimplementedTextServer
+}
+
 type Authenticator interface {
-	Register(ctx context.Context, u *models.User) (string, error)
-	Login(ctx context.Context, u *models.User) (string, error)
+	Register(ctx context.Context, name, password string) error
+	Login(ctx context.Context, name, password string) (int, error)
+	Find(ctx context.Context, uid int) (bool, error)
 }
 
 type BinaryServ interface {

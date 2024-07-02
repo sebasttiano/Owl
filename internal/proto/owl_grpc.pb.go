@@ -28,7 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
-	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 }
 
@@ -40,8 +40,8 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
-	out := new(RegisterResponse)
+func (c *authClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Auth_Register_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.C
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
 type AuthServer interface {
-	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	Register(context.Context, *RegisterRequest) (*emptypb.Empty, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
@@ -71,7 +71,7 @@ type AuthServer interface {
 type UnimplementedAuthServer struct {
 }
 
-func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
@@ -159,7 +159,7 @@ const (
 type BinaryClient interface {
 	SetBinary(ctx context.Context, in *SetBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetBinary(ctx context.Context, in *GetBinaryRequest, opts ...grpc.CallOption) (*GetBinaryResponse, error)
-	GetAllBinaries(ctx context.Context, in *GetAllBinariesRequest, opts ...grpc.CallOption) (*GetAllBinariesResponse, error)
+	GetAllBinaries(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllBinariesResponse, error)
 	DeleteBinary(ctx context.Context, in *DeleteBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -189,7 +189,7 @@ func (c *binaryClient) GetBinary(ctx context.Context, in *GetBinaryRequest, opts
 	return out, nil
 }
 
-func (c *binaryClient) GetAllBinaries(ctx context.Context, in *GetAllBinariesRequest, opts ...grpc.CallOption) (*GetAllBinariesResponse, error) {
+func (c *binaryClient) GetAllBinaries(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllBinariesResponse, error) {
 	out := new(GetAllBinariesResponse)
 	err := c.cc.Invoke(ctx, Binary_GetAllBinaries_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -213,7 +213,7 @@ func (c *binaryClient) DeleteBinary(ctx context.Context, in *DeleteBinaryRequest
 type BinaryServer interface {
 	SetBinary(context.Context, *SetBinaryRequest) (*emptypb.Empty, error)
 	GetBinary(context.Context, *GetBinaryRequest) (*GetBinaryResponse, error)
-	GetAllBinaries(context.Context, *GetAllBinariesRequest) (*GetAllBinariesResponse, error)
+	GetAllBinaries(context.Context, *emptypb.Empty) (*GetAllBinariesResponse, error)
 	DeleteBinary(context.Context, *DeleteBinaryRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedBinaryServer()
 }
@@ -228,7 +228,7 @@ func (UnimplementedBinaryServer) SetBinary(context.Context, *SetBinaryRequest) (
 func (UnimplementedBinaryServer) GetBinary(context.Context, *GetBinaryRequest) (*GetBinaryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBinary not implemented")
 }
-func (UnimplementedBinaryServer) GetAllBinaries(context.Context, *GetAllBinariesRequest) (*GetAllBinariesResponse, error) {
+func (UnimplementedBinaryServer) GetAllBinaries(context.Context, *emptypb.Empty) (*GetAllBinariesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllBinaries not implemented")
 }
 func (UnimplementedBinaryServer) DeleteBinary(context.Context, *DeleteBinaryRequest) (*emptypb.Empty, error) {
@@ -284,7 +284,7 @@ func _Binary_GetBinary_Handler(srv interface{}, ctx context.Context, dec func(in
 }
 
 func _Binary_GetAllBinaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllBinariesRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -296,7 +296,7 @@ func _Binary_GetAllBinaries_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: Binary_GetAllBinaries_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BinaryServer).GetAllBinaries(ctx, req.(*GetAllBinariesRequest))
+		return srv.(BinaryServer).GetAllBinaries(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -4,12 +4,11 @@
 CREATE TYPE resource_type AS ENUM ('BINARY', 'TEXT', 'CARD', 'PASSWORD');
 
 CREATE TABLE IF NOT EXISTS users(
-                                    id UUID DEFAULT gen_random_uuid(),
+                                    id serial PRIMARY KEY,
                                     name VARCHAR(255),
                                     password VARCHAR(255),
                                     registered_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                    UNIQUE(name),
-                                    PRIMARY KEY(id)
+                                    UNIQUE(name)
 );
 
 CREATE TABLE IF NOT EXISTS pieces(
@@ -23,7 +22,7 @@ CREATE TABLE IF NOT EXISTS pieces(
 CREATE TABLE IF NOT EXISTS resources(
                                       id serial PRIMARY KEY ,
                                       piece_uuid UUID,
-                                      user_id UUID,
+                                      user_id int,
                                       data BYTEA,
                                       type resource_type,
                                       meta TEXT,
