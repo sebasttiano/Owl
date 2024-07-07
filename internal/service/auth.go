@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jackc/pgerrcode"
+	"github.com/sebasttiano/Owl/internal/logger"
 	"github.com/sebasttiano/Owl/internal/models"
 	"github.com/sebasttiano/Owl/internal/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -33,6 +34,7 @@ func (a *AuthService) Register(ctx context.Context, name, password string) error
 		}
 		return ErrUserRegisrationFailed
 	}
+	logger.Log.Info(fmt.Sprintf("registered new user: %s", name))
 	return nil
 }
 
@@ -43,7 +45,7 @@ func (a *AuthService) Login(ctx context.Context, name, password string) (int, er
 		if errors.Is(err, repository.ErrDBNoRows) {
 			return 0, ErrUserNotFound
 		}
-		return 0, ErrUserLoginFailed
+		return 0, fmt.Errorf("%w: %v", ErrUserLoginFailed, err)
 	}
 
 	// Check password

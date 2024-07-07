@@ -348,10 +348,10 @@ var Binary_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Text_SetText_FullMethodName        = "/main.Text/SetText"
-	Text_GetText_FullMethodName        = "/main.Text/GetText"
-	Text_GetAllBinaries_FullMethodName = "/main.Text/GetAllBinaries"
-	Text_DeleteText_FullMethodName     = "/main.Text/DeleteText"
+	Text_SetText_FullMethodName     = "/main.Text/SetText"
+	Text_GetText_FullMethodName     = "/main.Text/GetText"
+	Text_GetAllTexts_FullMethodName = "/main.Text/GetAllTexts"
+	Text_DeleteText_FullMethodName  = "/main.Text/DeleteText"
 )
 
 // TextClient is the client API for Text service.
@@ -360,7 +360,7 @@ const (
 type TextClient interface {
 	SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error)
-	GetAllBinaries(ctx context.Context, in *GetAllTextsRequest, opts ...grpc.CallOption) (*GetAllTextsResponse, error)
+	GetAllTexts(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllTextsResponse, error)
 	DeleteText(ctx context.Context, in *DeleteTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -390,9 +390,9 @@ func (c *textClient) GetText(ctx context.Context, in *GetTextRequest, opts ...gr
 	return out, nil
 }
 
-func (c *textClient) GetAllBinaries(ctx context.Context, in *GetAllTextsRequest, opts ...grpc.CallOption) (*GetAllTextsResponse, error) {
+func (c *textClient) GetAllTexts(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllTextsResponse, error) {
 	out := new(GetAllTextsResponse)
-	err := c.cc.Invoke(ctx, Text_GetAllBinaries_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Text_GetAllTexts_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -414,7 +414,7 @@ func (c *textClient) DeleteText(ctx context.Context, in *DeleteTextRequest, opts
 type TextServer interface {
 	SetText(context.Context, *SetTextRequest) (*emptypb.Empty, error)
 	GetText(context.Context, *GetTextRequest) (*GetTextResponse, error)
-	GetAllBinaries(context.Context, *GetAllTextsRequest) (*GetAllTextsResponse, error)
+	GetAllTexts(context.Context, *emptypb.Empty) (*GetAllTextsResponse, error)
 	DeleteText(context.Context, *DeleteTextRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedTextServer()
 }
@@ -429,8 +429,8 @@ func (UnimplementedTextServer) SetText(context.Context, *SetTextRequest) (*empty
 func (UnimplementedTextServer) GetText(context.Context, *GetTextRequest) (*GetTextResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetText not implemented")
 }
-func (UnimplementedTextServer) GetAllBinaries(context.Context, *GetAllTextsRequest) (*GetAllTextsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllBinaries not implemented")
+func (UnimplementedTextServer) GetAllTexts(context.Context, *emptypb.Empty) (*GetAllTextsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllTexts not implemented")
 }
 func (UnimplementedTextServer) DeleteText(context.Context, *DeleteTextRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteText not implemented")
@@ -484,20 +484,20 @@ func _Text_GetText_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Text_GetAllBinaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllTextsRequest)
+func _Text_GetAllTexts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TextServer).GetAllBinaries(ctx, in)
+		return srv.(TextServer).GetAllTexts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Text_GetAllBinaries_FullMethodName,
+		FullMethod: Text_GetAllTexts_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TextServer).GetAllBinaries(ctx, req.(*GetAllTextsRequest))
+		return srv.(TextServer).GetAllTexts(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -536,8 +536,8 @@ var Text_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Text_GetText_Handler,
 		},
 		{
-			MethodName: "GetAllBinaries",
-			Handler:    _Text_GetAllBinaries_Handler,
+			MethodName: "GetAllTexts",
+			Handler:    _Text_GetAllTexts_Handler,
 		},
 		{
 			MethodName: "DeleteText",

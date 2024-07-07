@@ -58,6 +58,7 @@ func (d *DBStorage) AddUser(ctx context.Context, user *models.User) error {
 	// create new user
 	sqlInsert := `INSERT INTO users (name, password) VALUES ($1, $2) RETURNING id`
 	var id int
+	fmt.Println(ctx)
 	if err := tx.GetContext(ctx, &id, sqlInsert, user.Name, user.HashedPassword); err != nil {
 		tx.Rollback()
 		return err

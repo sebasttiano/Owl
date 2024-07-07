@@ -42,6 +42,10 @@ func NewServerConfig() (*ServerConfig, error) {
 	return &config, nil
 }
 
+func (c *ClientConfig) GetServerAddress() string {
+	return fmt.Sprintf("%s:%d", c.Server.Host, c.Server.Port)
+}
+
 type ClientConfig struct {
 	Server struct {
 		Host string `yaml:"host" env:"API_HOST" env-default:"localhost"`
@@ -52,14 +56,16 @@ type ClientConfig struct {
 		Cert string `yaml:"cert" env:"CLIENT_CERT_PATH" env-default:"cert/cli.crt"`
 		Key  string `yaml:"key" env:"CLIENT_KEY_PATH" env-default:"cert/cli.key"`
 	} `yaml:"cert"`
+	Auth struct {
+		RefreshPeriod int `yaml:"refresh_period" env:"REFRESH_PERIOD" env-default:"300"`
+	} `yaml:"auth"`
 }
 
 func NewClientConfig() (*ClientConfig, error) {
 	config := ClientConfig{}
 
-	if err := cleanenv.ReadConfig("./client_cfg.yaml", &config); err != nil {
+	if err := cleanenv.ReadConfig("./config/client_cfg.yaml", &config); err != nil {
 		return nil, fmt.Errorf("cannot read cli config: %s", err)
 	}
-
 	return &config, nil
 }

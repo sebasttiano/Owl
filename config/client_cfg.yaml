@@ -7,3 +7,5 @@ cert:
   ca: "cert/CertAuth.crt"
   cert: "cert/cli.crt"
   key: "cert/cli.key"
+auth:
+  refresh_period: 300

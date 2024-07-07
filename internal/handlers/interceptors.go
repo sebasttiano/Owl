@@ -60,7 +60,10 @@ type AuthInterceptor struct {
 }
 
 func NewAuthInterceptor(jwtManager *JWTManager) *AuthInterceptor {
-	return &AuthInterceptor{jwtManager, map[string]bool{"Login": true}}
+	return &AuthInterceptor{jwtManager, map[string]bool{
+		"/main.Auth/Login":    true,
+		"/main.Auth/Register": true,
+	}}
 }
 
 func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
@@ -71,23 +74,18 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		logger.Log.Info(fmt.Sprintf("--> unary interceptor: %s", info.FullMethod))
-		claims, err := i.authorize(ctx, info.FullMethod)
+		newCtx, err := i.authorize(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
 		}
-
-		// Set user id to metadata
-		md, ok := metadata.FromIncomingContext(ctx)
-		if ok {
-			md.Append("user-id", strconv.Itoa(claims.ID))
+		if newCtx != nil {
+			ctx = newCtx
 		}
-
-		newCtx := metadata.NewIncomingContext(ctx, md)
-		return handler(newCtx, req)
+		return handler(ctx, req)
 	}
 }
 
-func (i *AuthInterceptor) authorize(ctx context.Context, method string) (*Claims, error) {
+func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context.Context, error) {
 	fmt.Println(method)
 	_, ok := i.whitelistMethods[method]
 	if ok {
@@ -111,5 +109,12 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (*Claims
 		return nil, status.Errorf(codes.Unauthenticated, "%w: %v", ErrInvalidToken, err)
 	}
 
-	return claims, nil
+	// Set user id to metadata
+	md, ok = metadata.FromIncomingContext(ctx)
+	if ok {
+		md.Append("user-id", strconv.Itoa(claims.ID))
+	}
+
+	newCtx := metadata.NewIncomingContext(ctx, md)
+	return newCtx, nil
 }

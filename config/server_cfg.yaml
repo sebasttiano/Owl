@@ -11,4 +11,4 @@ server:
   secret: "Ieti6ahzi4xoh3ohqu0b"
   token_duration: 300
 log:
-  level: "info"
+  level: "debug"

@@ -63,12 +63,10 @@ message TextMsg {
 }
 
 message SetTextRequest {
-  string  token = 1;
   TextMsg text = 2;
 }
 
 message GetTextRequest {
-  string token = 1;
   int32 id = 2;
 }
 
@@ -76,22 +74,18 @@ message GetTextResponse {
   TextMsg text = 1;
 }
 
-message GetAllTextsRequest {
-  string token = 1;
-}
 
 message GetAllTextsResponse {
   repeated TextMsg texts = 1;
 }
 
 message DeleteTextRequest {
-  string token = 1;
   int32 id = 2;
 }
 
 service Text {
   rpc SetText(SetTextRequest) returns (google.protobuf.Empty);
   rpc GetText(GetTextRequest) returns (GetTextResponse);
-  rpc GetAllBinaries(GetAllTextsRequest) returns (GetAllTextsResponse);
+  rpc GetAllTexts(google.protobuf.Empty) returns (GetAllTextsResponse);
   rpc DeleteText(DeleteTextRequest) returns (google.protobuf.Empty);
 }

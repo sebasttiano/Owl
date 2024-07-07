@@ -1,12 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/sebasttiano/Owl/internal/cli"
+	"github.com/sebasttiano/Owl/internal/config"
 	"github.com/sebasttiano/Owl/internal/logger"
-	pb "github.com/sebasttiano/Owl/internal/proto"
-	"time"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -14,9 +13,21 @@ func main() {
 		fmt.Println("logger initialization failed")
 		return
 	}
-	cli := cli.NewCLI(":8091")
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	cli.Client.Text.SetText(ctx, &pb.SetTextRequest{Text: &pb.TextMsg{Text: "Some text", Description: "test"}})
-	fmt.Println(cli)
+
+	cfg, err := config.NewClientConfig()
+	if err != nil {
+		logger.Log.Error("parsing config failed", zap.Error(err))
+		return
+	}
+
+	cliApp := cli.NewCLI(cfg)
+	cliApp.Run()
+
+	//if err != nil {
+	//	if e, ok := status.FromError(err); ok {
+	//		print(e.Code(), "\n")
+	//		print(e.Message(), "\n")
+	//	}
+	//	os.Exit(1)
+	//}
 }
