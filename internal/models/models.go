@@ -1,5 +1,12 @@
 package models
 
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/sebasttiano/Owl/internal/logger"
+	"go.uber.org/zap"
+)
+
 type ResourceType string
 
 const (
@@ -10,11 +17,6 @@ const (
 )
 
 type (
-	// Piece is a piece of encrypted information.
-	Piece struct {
-		Content []byte // Content of the piece.
-		Meta    string // Meta info of the piece.
-	}
 	User struct {
 		ID             int
 		Name           string `json:"name" valid:"required,type(string)"`
@@ -23,27 +25,20 @@ type (
 	}
 
 	Resource struct {
-		ID          int
-		UserID      int
-		Type        ResourceType
+		ID          int          `db:"id"`
+		UserID      int          `db:"user_id"`
+		PieceUUID   string       `db:"piece_uuid"`
+		Meta        string       `db:"meta"`
+		Type        ResourceType `db:"type"`
 		Description string
 		Content     string
 	}
-
-	ResourceDB struct {
-		ID        int          `db:"id"`
-		UserID    int          `db:"user_id"`
-		PieceUUID string       `db:"piece_uuid"`
-		Meta      string       `db:"meta"`
-		Type      ResourceType `db:"type"`
-	}
-	PieceDB struct {
-		Content []byte `db:"content"`
+	// Piece is a piece of encrypted information.
+	Piece struct {
+		Content []byte `db:"content"` // Content of the piece.
 		IV      []byte `db:"iv"`
 		Salt    []byte `db:"salt"`
-	}
-	BlobDB struct {
-		location string
+		Meta    string // Meta info of the piece.
 	}
 
 	Meta struct {
@@ -51,3 +46,13 @@ type (
 		Description string       `json:"description"`
 	}
 )
+
+func (r *Resource) SetDescriptionFromMeta() {
+
+	var m Meta
+	if err := json.Unmarshal([]byte(r.Meta), &m); err != nil {
+		logger.Log.Error(fmt.Sprintf("failed to unmarshall meta: %s", r.Meta), zap.Error(err))
+		return
+	}
+	r.Description = m.Description
+}

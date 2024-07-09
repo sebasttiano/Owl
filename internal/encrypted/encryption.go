@@ -23,7 +23,7 @@ type Data struct {
 }
 
 // PasswordEncryption returns password based encryption data.
-func PasswordEncryption(password string, ciph Cipher, content string) (*models.PieceDB, error) {
+func PasswordEncryption(password string, ciph Cipher, content string) (*models.Piece, error) {
 	salt := make([]byte, 8)
 	if _, err := rand.Read(salt); err != nil {
 		return nil, err
@@ -52,12 +52,12 @@ func PasswordEncryption(password string, ciph Cipher, content string) (*models.P
 		return nil, err
 	}
 
-	piece := &models.PieceDB{Content: encryptedContent, IV: iv, Salt: salt}
+	piece := &models.Piece{Content: encryptedContent, IV: iv, Salt: salt}
 	return piece, nil
 }
 
 // PasswordDecryption ret
-func PasswordDecryption(password string, ciph Cipher, piece *models.PieceDB) (string, error) {
+func PasswordDecryption(password string, ciph Cipher, piece *models.Piece) (string, error) {
 	block, err := aes.NewCipher(
 		pbkdf2.Key([]byte(password), piece.Salt, keyIter, keyLen, sha256.New),
 	)

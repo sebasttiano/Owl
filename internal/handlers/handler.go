@@ -50,7 +50,7 @@ type BinaryServ interface {
 type TextServ interface {
 	SetText(ctx context.Context, data models.Resource) error
 	GetText(ctx context.Context, res *models.Resource) (*models.Resource, error)
-	GetAllTexts(ctx context.Context) ([]models.Resource, error)
+	GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error)
 	DeleteText(ctx context.Context, id int) error
 }
 

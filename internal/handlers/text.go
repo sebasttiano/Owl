@@ -43,7 +43,21 @@ func (t *TextServer) GetText(ctx context.Context, in *pb.GetTextRequest) (*pb.Ge
 }
 
 func (t *TextServer) GetAllTexts(ctx context.Context, in *emptypb.Empty) (*pb.GetAllTextsResponse, error) {
-	return nil, nil
+
+	userId, err := getUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	texts, err := t.Text.GetAllTexts(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	textsMeta := make([]*pb.TextMeta, len(texts))
+	for i, text := range texts {
+		textsMeta[i] = &pb.TextMeta{Id: int32(text.ID), Description: text.Description}
+	}
+	return &pb.GetAllTextsResponse{Texts: textsMeta}, nil
 }
 
 func (t *TextServer) DeleteText(ctx context.Context, in *pb.DeleteTextRequest) (*emptypb.Empty, error) {

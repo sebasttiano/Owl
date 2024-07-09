@@ -9,7 +9,8 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	pb "github.com/sebasttiano/Owl/internal/proto"
+	"github.com/sebasttiano/Owl/internal/logger"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -25,6 +26,7 @@ func (c *CLI) StartMainBoard(ctx context.Context) error {
 
 	mainBoard := NewMainBoard(c)
 	if err := mainBoard.initLists(ctx); err != nil {
+		logger.Log.Error("failed to init board columns", zap.Error(err))
 		return ErrInitMainBoard
 	}
 
@@ -68,30 +70,19 @@ func (m *MainBoard) initLists(ctx context.Context) error {
 	m.cols[cardType].list.Title = "Bank cards"
 	m.cols[textType].list.Title = "Notes"
 
-	textReq := &pb.SetTextRequest{Text: &pb.TextMsg{Text: "Zhili bili ded and babka", Description: "fairy tale"}}
-
-	_, err := m.cli.Client.Text.SetText(ctx, textReq)
-	if err != nil {
-		return err
-	}
-
 	resp, err := m.cli.Client.Text.GetAllTexts(ctx, &emptypb.Empty{})
 	if err != nil {
 		return err
 	}
+	for i, text := range resp.GetTexts() {
+		item := ResourceItem{resType: textType, title: fmt.Sprintf("ID: %d", text.Id), description: text.Description}
+		m.cols[textType].list.InsertItem(i, item)
 
-	for i, text := range resp.Texts {
-		item := ResourceItem{resType: textType, title: fmt.Sprintf("#: %d", i), description: text.Description}
-
-		m.cols[textType].list.SetItem(i, item)
 	}
-
-	req := &pb.GetTextRequest{Id: 9}
-	_, err = m.cli.Client.Text.GetText(ctx, req)
 	return nil
 }
 
-func (m *MainBoard) UpdateColunms() {
+func (m *MainBoard) UpdateColumns() {
 
 }
 func NewMainBoard(cli *CLI) *MainBoard {
