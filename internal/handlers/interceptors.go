@@ -86,7 +86,6 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 }
 
 func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context.Context, error) {
-	fmt.Println(method)
 	_, ok := i.whitelistMethods[method]
 	if ok {
 		// everyone can access

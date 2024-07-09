@@ -79,7 +79,6 @@ func (i *AuthInterceptor) Unary() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		logger.Log.Debug(fmt.Sprintf("--> unary interceptor: %s", method))
-		fmt.Println(i)
 		if i.authMethods[method] {
 			return invoker(i.attachToken(ctx), method, req, reply, cc, opts...)
 		}

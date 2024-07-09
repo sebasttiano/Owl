@@ -53,7 +53,6 @@ type SignBoard struct {
 	cancelled     bool
 	list          list.Model
 	help          help.Model
-	focused       state
 	width, height int
 	loaded        bool
 	cli           *CLI
@@ -69,7 +68,7 @@ func NewSignBoard(c *CLI) SignBoard {
 	signList.SetShowHelp(false)
 	signList.Title = "Do you have an account?"
 
-	return SignBoard{help: help, focused: signIn, list: signList}
+	return SignBoard{help: help, list: signList}
 }
 
 func (s SignBoard) Init() tea.Cmd {

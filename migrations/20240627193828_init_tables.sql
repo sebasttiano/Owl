@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS resources(
                                       id serial PRIMARY KEY ,
                                       piece_uuid UUID,
                                       user_id int,
-                                      data BYTEA,
                                       type resource_type,
                                       meta TEXT,
                                       CONSTRAINT fk_user

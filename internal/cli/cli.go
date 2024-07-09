@@ -44,7 +44,7 @@ func (c *CLI) Run() error {
 	authClient := NewAuthClient(authConn, name, pass)
 	logger.Log.Info("successfully init auth client", zap.String("address", authConn.Target()))
 
-	authInterceptor, err := NewAuthInterceptor(authClient, AuthMethods(), 5*time.Second)
+	authInterceptor, err := NewAuthInterceptor(authClient, AuthMethods(), time.Duration(c.cfg.Auth.RefreshPeriod)*time.Second)
 	if err != nil {
 		logger.Log.Error("failed to create auth interceptor", zap.Error(err))
 		return ErrInitAuthInterceptor
@@ -64,6 +64,10 @@ func (c *CLI) Run() error {
 	if err != nil {
 		logger.Log.Error("failed to create grpc client")
 		return ErrInitGRPSClient
+	}
+
+	if err := c.StartMainBoard(ctx); err != nil {
+		return err
 	}
 
 	return nil

@@ -56,7 +56,10 @@ service Binary {
   rpc DeleteBinary(DeleteBinaryRequest) returns (google.protobuf.Empty);
 }
 
-
+message TextMeta {
+  int32 id = 1;
+  string description = 2;
+}
 message TextMsg {
   string text = 1;
   string description = 2;
@@ -76,7 +79,7 @@ message GetTextResponse {
 
 
 message GetAllTextsResponse {
-  repeated TextMsg texts = 1;
+  repeated TextMeta texts = 1;
 }
 
 message DeleteTextRequest {

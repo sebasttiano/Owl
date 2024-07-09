@@ -2,8 +2,9 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	"github.com/jmoiron/sqlx"
+	"github.com/sebasttiano/Owl/internal/repository"
 	"net"
 	"sync"
 	"time"
@@ -27,7 +28,8 @@ type GRPSServer struct {
 }
 
 // NewGRPSServer конструктор для gRPC сервера
-func NewGRPSServer(repo service.Repository, settings *GRPSServerSettings) *GRPSServer {
+func NewGRPSServer(conn *sqlx.DB, settings *GRPSServerSettings) *GRPSServer {
+	repo := repository.NewDBStorage(conn)
 	j := handlers.NewJWTManager(settings.SecretKey, settings.TokenDuration)
 	authInterceptor := handlers.NewAuthInterceptor(j)
 	s := grpc.NewServer(
@@ -40,8 +42,8 @@ func NewGRPSServer(repo service.Repository, settings *GRPSServerSettings) *GRPSS
 		Auth:     service.NewAuthService(repo),
 		JManager: j,
 	})
-	pb.RegisterBinaryServer(s, &handlers.BinaryServer{Binary: service.NewBinaryService(&repo)})
-	pb.RegisterTextServer(s, &handlers.TextServer{Text: service.NewTextService(&repo)})
+	pb.RegisterBinaryServer(s, &handlers.BinaryServer{Binary: service.NewBinaryService(repo)})
+	pb.RegisterTextServer(s, &handlers.TextServer{Text: service.NewTextService(repo)})
 	return &GRPSServer{
 		srv: s,
 	}
@@ -52,7 +54,6 @@ func (s *GRPSServer) Start(addr string) {
 	logger.Log.Info("Running gRPC server", zap.String("address", addr))
 	listen, err := net.Listen("tcp", addr)
 	if err != nil {
-		fmt.Println(err.Error())
 		logger.Log.Error("failed to allocate tcp socket for gRPC server", zap.Error(err))
 	}
 	if err := s.srv.Serve(listen); err != nil {

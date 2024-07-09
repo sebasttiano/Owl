@@ -1,12 +1,11 @@
 package cli
 
 type Item struct {
-	state       state
 	title       string
 	description string
 }
 
-func NewItem(title, description string, state state) Item {
+func NewItem(title, description string) Item {
 	return Item{title: title, description: description}
 }
 

@@ -7,7 +7,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/sebasttiano/Owl/internal/config"
 	"github.com/sebasttiano/Owl/internal/logger"
-	"github.com/sebasttiano/Owl/internal/repository"
 	"github.com/sebasttiano/Owl/internal/server"
 	"go.uber.org/zap"
 	"os"
@@ -43,9 +42,8 @@ func Run() {
 
 	wg := &sync.WaitGroup{}
 
-	repo := repository.NewDBStorage(conn)
 	settings := &server.GRPSServerSettings{SecretKey: cfg.Server.Secret, TokenDuration: time.Duration(cfg.Server.TokenDuration) * time.Second}
-	grpcSrv := server.NewGRPSServer(repo, settings)
+	grpcSrv := server.NewGRPSServer(conn, settings)
 
 	wg.Add(1)
 	go grpcSrv.Start(cfg.GetAddress())

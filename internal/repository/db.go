@@ -58,7 +58,6 @@ func (d *DBStorage) AddUser(ctx context.Context, user *models.User) error {
 	// create new user
 	sqlInsert := `INSERT INTO users (name, password) VALUES ($1, $2) RETURNING id`
 	var id int
-	fmt.Println(ctx)
 	if err := tx.GetContext(ctx, &id, sqlInsert, user.Name, user.HashedPassword); err != nil {
 		tx.Rollback()
 		return err
@@ -67,4 +66,62 @@ func (d *DBStorage) AddUser(ctx context.Context, user *models.User) error {
 
 	tx.Commit()
 	return nil
+}
+
+func (d *DBStorage) GetUserHashPass(ctx context.Context, uid int) (string, error) {
+
+	//type
+	var pass *string
+	sqlSelect := `SELECT password FROM users WHERE id = $1`
+
+	if err := d.conn.GetContext(ctx, &pass, sqlSelect, uid); err != nil {
+		return "", err
+	}
+	return *pass, nil
+}
+
+func (d *DBStorage) SetText(ctx context.Context, res *models.ResourceDB, piece *models.PieceDB) error {
+
+	tx, err := d.conn.Beginx()
+	if err != nil {
+		return err
+	}
+	// insert into pieces
+	sqlInsert := `INSERT INTO pieces (content, iv, salt) VALUES ($1, $2, $3) RETURNING id`
+
+	var uuid string
+	if err := d.conn.GetContext(ctx, &uuid, sqlInsert, piece.Content, piece.IV, piece.Salt); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// insert into resources
+	sqlInsert = `INSERT INTO resources (piece_uuid, user_id, type, meta) VALUES ($1, $2, $3, $4)`
+	if _, err := d.conn.ExecContext(ctx, sqlInsert, uuid, res.UserID, res.Type, res.Meta); err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (d *DBStorage) GetText(ctx context.Context, res *models.ResourceDB) (*models.ResourceDB, *models.PieceDB, error) {
+
+	// get resource
+	sqlSelect := `SELECT piece_uuid, type, meta FROM resources WHERE id = $1`
+	if err := d.conn.GetContext(ctx, res, sqlSelect, res.ID); err != nil {
+		return nil, nil, err
+	}
+
+	// get piece
+	//var piece models.PieceDB
+	piece := &models.PieceDB{}
+	sqlSelect = `SELECT content, salt, iv FROM pieces WHERE id = $1`
+	if err := d.conn.GetContext(ctx, piece, sqlSelect, res.PieceUUID); err != nil {
+		return nil, nil, err
+	}
+	return res, piece, nil
+}
+func (d *DBStorage) GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error) {
+	return nil, nil
 }
