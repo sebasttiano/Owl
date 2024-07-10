@@ -18,7 +18,7 @@ type AuthRepo interface {
 
 type ResourceRepo interface {
 	GetUserHashPass(ctx context.Context, uid int) (string, error)
-	SetText(ctx context.Context, res *models.Resource, piece *models.Piece) error
+	SetText(ctx context.Context, res *models.Resource, piece *models.Piece) (*models.Resource, error)
 	GetText(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error)
 	GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error)
 }

@@ -358,7 +358,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TextClient interface {
-	SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*SetTextResponse, error)
 	GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error)
 	GetAllTexts(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllTextsResponse, error)
 	DeleteText(ctx context.Context, in *DeleteTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -372,8 +372,8 @@ func NewTextClient(cc grpc.ClientConnInterface) TextClient {
 	return &textClient{cc}
 }
 
-func (c *textClient) SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *textClient) SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*SetTextResponse, error) {
+	out := new(SetTextResponse)
 	err := c.cc.Invoke(ctx, Text_SetText_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -412,7 +412,7 @@ func (c *textClient) DeleteText(ctx context.Context, in *DeleteTextRequest, opts
 // All implementations must embed UnimplementedTextServer
 // for forward compatibility
 type TextServer interface {
-	SetText(context.Context, *SetTextRequest) (*emptypb.Empty, error)
+	SetText(context.Context, *SetTextRequest) (*SetTextResponse, error)
 	GetText(context.Context, *GetTextRequest) (*GetTextResponse, error)
 	GetAllTexts(context.Context, *emptypb.Empty) (*GetAllTextsResponse, error)
 	DeleteText(context.Context, *DeleteTextRequest) (*emptypb.Empty, error)
@@ -423,7 +423,7 @@ type TextServer interface {
 type UnimplementedTextServer struct {
 }
 
-func (UnimplementedTextServer) SetText(context.Context, *SetTextRequest) (*emptypb.Empty, error) {
+func (UnimplementedTextServer) SetText(context.Context, *SetTextRequest) (*SetTextResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetText not implemented")
 }
 func (UnimplementedTextServer) GetText(context.Context, *GetTextRequest) (*GetTextResponse, error) {

@@ -29,6 +29,7 @@ type keyMap struct {
 	Help   key.Binding
 	Quit   key.Binding
 	Back   key.Binding
+	Save   key.Binding
 }
 
 var keys = keyMap{
@@ -75,5 +76,9 @@ var keys = keyMap{
 	Back: key.NewBinding(
 		key.WithKeys("esc"),
 		key.WithHelp("esc", "back"),
+	),
+	Save: key.NewBinding(
+		key.WithKeys("ctrl+s"),
+		key.WithHelp("ctrl+s", "save"),
 	),
 }

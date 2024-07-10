@@ -3,7 +3,6 @@ package cli
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
@@ -11,6 +10,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -18,14 +18,30 @@ var (
 	ErrInitMainBoard = errors.New("failed to init main board")
 )
 
+var mainBoard *MainBoard
+
 type resType int
+
+func (s resType) getNext() resType {
+	if s == textType {
+		return credType
+	}
+	return s + 1
+}
+
+func (s resType) getPrev() resType {
+	if s == credType {
+		return textType
+	}
+	return s - 1
+}
 
 const margin = 4
 
 func (c *CLI) StartMainBoard(ctx context.Context) error {
 
-	mainBoard := NewMainBoard(c)
-	if err := mainBoard.initLists(ctx); err != nil {
+	mainBoard = NewMainBoard(ctx, c)
+	if err := mainBoard.initLists(); err != nil {
 		logger.Log.Error("failed to init board columns", zap.Error(err))
 		return ErrInitMainBoard
 	}
@@ -48,6 +64,7 @@ const (
 )
 
 type MainBoard struct {
+	ctx       context.Context
 	help      help.Model
 	cols      []column
 	loaded    bool
@@ -57,43 +74,51 @@ type MainBoard struct {
 	cli       *CLI
 }
 
-func (m *MainBoard) initLists(ctx context.Context) error {
+func (m *MainBoard) initLists() error {
 
 	// Init cred, card, text types
 	m.cols = []column{
-		newColumn(credType),
-		newColumn(cardType),
-		newColumn(textType),
+		newColumn(m.ctx, credType, m.cli),
+		newColumn(m.ctx, cardType, m.cli),
+		newColumn(m.ctx, textType, m.cli),
 	}
 
 	m.cols[credType].list.Title = "Credentials"
 	m.cols[cardType].list.Title = "Bank cards"
 	m.cols[textType].list.Title = "Notes"
 
-	resp, err := m.cli.Client.Text.GetAllTexts(ctx, &emptypb.Empty{})
-	if err != nil {
-		return err
-	}
-	for i, text := range resp.GetTexts() {
-		item := ResourceItem{resType: textType, title: fmt.Sprintf("ID: %d", text.Id), description: text.Description}
-		m.cols[textType].list.InsertItem(i, item)
-
-	}
 	return nil
 }
 
-func (m *MainBoard) UpdateColumns() {
-
-}
-func NewMainBoard(cli *CLI) *MainBoard {
+func NewMainBoard(ctx context.Context, cli *CLI) *MainBoard {
 	help := help.New()
 	help.ShowAll = true
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
 	defaultList.SetShowHelp(false)
-	return &MainBoard{help: help, list: defaultList, cli: cli}
+	return &MainBoard{ctx: ctx, help: help, list: defaultList, cli: cli}
 }
 
 func (m *MainBoard) Init() tea.Cmd {
+	return nil
+}
+
+func (m *MainBoard) updateColumn(resType ...resType) error {
+
+	for _, _type := range resType {
+		switch _type {
+		case textType:
+			resp, err := m.cli.Client.Text.GetAllTexts(m.ctx, &emptypb.Empty{})
+			if err != nil {
+				return err
+			}
+			for i, text := range resp.GetTexts() {
+				item := ResourceItem{resType: textType, resID: int(text.Id), index: i, description: text.Description}
+				item.title = item.MakeTitle()
+				m.cols[textType].list.InsertItem(i, &item)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -103,6 +128,13 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		var cmds []tea.Cmd
 		m.help.Width = msg.Width - margin
+		if !m.loaded {
+			if err := m.updateColumn(textType); err != nil {
+				if e, ok := status.FromError(err); ok {
+					return NewErrorModel(e.Err()), nil
+				}
+			}
+		}
 		for i := 0; i < len(m.cols); i++ {
 			var res tea.Model
 			res, cmd = m.cols[i].Update(msg)
@@ -116,6 +148,14 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keys.Quit):
 			m.cancelled = true
 			return m, tea.Quit
+		case key.Matches(msg, keys.Left):
+			m.cols[m.focused].Blur()
+			m.focused = m.focused.getPrev()
+			m.cols[m.focused].Focus()
+		case key.Matches(msg, keys.Right):
+			m.cols[m.focused].Blur()
+			m.focused = m.focused.getNext()
+			m.cols[m.focused].Focus()
 			//case key.Matches(msg, keys.Enter):
 			//	switch option := s.list.SelectedItem().(type) {
 			//	case signInModel:
@@ -124,9 +164,20 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			//		return option.Update(nil)
 			//	}
 		}
+	case textForm:
+		m.cols[textType].Set(APPEND, msg.createResource())
+		return m, nil
+	case ErrorModel:
+		return msg.Update(nil)
 	}
-	return m, nil
 
+	res, cmd := m.cols[m.focused].Update(msg)
+	if _, ok := res.(column); ok {
+		m.cols[m.focused] = res.(column)
+	} else {
+		return res, cmd
+	}
+	return m, cmd
 }
 
 func (m *MainBoard) View() string {

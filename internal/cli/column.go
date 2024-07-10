@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -10,11 +11,13 @@ import (
 const APPEND = -1
 
 type column struct {
+	ctx     context.Context
 	focus   bool
 	resType resType
 	list    list.Model
 	height  int
 	width   int
+	cli     *CLI
 }
 
 func (c *column) Focus() {
@@ -29,14 +32,14 @@ func (c *column) Focused() bool {
 	return c.focus
 }
 
-func newColumn(resType resType) column {
+func newColumn(ctx context.Context, resType resType, cli *CLI) column {
 	var focus bool
 	if resType == credType {
 		focus = true
 	}
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
 	defaultList.SetShowHelp(false)
-	return column{focus: focus, resType: resType, list: defaultList}
+	return column{ctx: ctx, cli: cli, focus: focus, resType: resType, list: defaultList}
 }
 
 // Init does initial setup for the column.
@@ -53,6 +56,15 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		c.list.SetSize(msg.Width/margin, msg.Height/2)
 	case tea.KeyMsg:
 		switch {
+		case key.Matches(msg, keys.New):
+			t := newTextModel(c.ctx, c.cli)
+			t.index = APPEND
+			return t.Update(nil)
+		case key.Matches(msg, keys.Enter):
+			if len(c.list.VisibleItems()) != 0 {
+				_ = c.list.SelectedItem().(ResourceItem)
+			}
+			//return c, c.MoveToNext()
 		//case key.Matches(msg, keys.Edit):
 		//	if len(c.list.VisibleItems()) != 0 {
 		//		task := c.list.SelectedItem().(Task)
@@ -90,12 +102,12 @@ func (c *column) DeleteCurrent() tea.Cmd {
 	return cmd
 }
 
-//func (c *column) Set(i int, t Task) tea.Cmd {
-//	if i != APPEND {
-//		return c.list.SetItem(i, t)
-//	}
-//	return c.list.InsertItem(APPEND, t)
-//}
+func (c *column) Set(i int, r ResourceItem) tea.Cmd {
+	if i != APPEND {
+		return c.list.SetItem(i, &r)
+	}
+	return c.list.InsertItem(APPEND, &r)
+}
 
 func (c *column) setSize(width, height int) {
 	c.width = width / margin

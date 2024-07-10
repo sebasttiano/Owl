@@ -1,11 +1,17 @@
 package cli
 
 import (
+	"context"
+	"fmt"
 	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	pb "github.com/sebasttiano/Owl/internal/proto"
+	"google.golang.org/grpc/status"
+	"strings"
 )
 
 var formStyle = lipgloss.NewStyle().
@@ -25,74 +31,168 @@ func form(width, height int, title, content string) string {
 	)
 }
 
-type Form struct {
-	help        help.Model
-	title       textinput.Model
-	description textarea.Model
-	col         column
-	index       int
+type textForm struct {
+	ctx           context.Context
+	width, height int
+	index         int
+	description   textinput.Model
+	content       textarea.Model
+	cancelled     bool
+	cli           *CLI
+	help          help.Model
+	resID         int
 }
 
-func newDefaultForm() *Form {
-	return NewForm("task name", "")
-}
-
-func NewForm(title, description string) *Form {
-	form := Form{
+func newTextModel(ctx context.Context, cli *CLI) textForm {
+	m := textForm{
+		ctx:         ctx,
+		cli:         cli,
+		description: textinput.New(),
+		content:     textarea.New(),
 		help:        help.New(),
-		title:       textinput.New(),
-		description: textarea.New(),
 	}
-	form.title.Placeholder = title
-	form.description.Placeholder = description
-	form.title.Focus()
-	return &form
+	m.description.CharLimit = 32
+	m.description.Placeholder = "type your description"
+	m.content.ShowLineNumbers = false
+	m.content.MaxWidth = 64
+	m.content.CharLimit = 1024
+	m.content.Placeholder = "type your note..."
+	m.content.SetHeight(12)
+	m.content.SetWidth(64)
+
+	m.description.Focus()
+	return m
 }
 
-//func (f Form) CreateTask() Task {
-//	return Task{f.col.status, f.title.Value(), f.description.Value()}
-//}
+// Init implements tea.Model.
+func (f textForm) Init() tea.Cmd {
+	return textarea.Blink
+}
 
-func (f Form) Init() tea.Cmd {
+// Update implements tea.Model.
+func (f textForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var contentCmd tea.Cmd
+	var descriptionCmd tea.Cmd
+	f.content, contentCmd = f.content.Update(msg)
+	f.description, descriptionCmd = f.description.Update(msg)
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		f.width = msg.Width
+		f.height = msg.Height
+		f.help.Width = msg.Width
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keys.Quit):
+			f.cancelled = false
+			return f, tea.Quit
+		case key.Matches(msg, keys.Back):
+			return mainBoard.Update(nil)
+		case key.Matches(msg, keys.Enter):
+			switch {
+			case f.description.Focused():
+				if len(f.description.Value()) < 1 {
+					return f, textinput.Blink
+				}
+				f.description.Blur()
+				f.content.Focus()
+			case f.content.Focused():
+				if len(f.content.Value()) < 1 {
+					return f, textinput.Blink
+				}
+				f.content.Blur()
+			}
+		case key.Matches(msg, keys.Save):
+			if len(f.description.Value()) > 0 && len(f.content.Value()) > 0 {
+				return f, f.saveTextToServer(f.description.Value(), f.content.Value())
+			}
+		}
+	case textForm:
+		return mainBoard.Update(f)
+	case ErrorModel:
+		return mainBoard.Update(msg)
+	}
+
+	return f, tea.Batch(descriptionCmd, contentCmd)
+}
+
+func (f textForm) saveTextToServer(description, content string) tea.Cmd {
+	return func() tea.Msg {
+		request := pb.SetTextRequest{Text: &pb.TextMsg{Text: content, Description: description}}
+		resp, err := f.cli.Client.Text.SetText(f.ctx, &request)
+		if err != nil {
+			if e, ok := status.FromError(err); ok {
+				return NewErrorModel(e.Err())
+			}
+		}
+		f.resID = int(resp.Text.Id)
+		return f
+	}
+}
+
+// View implements tea.Model.
+func (f textForm) View() string {
+	return form(
+		f.width, f.height,
+		"Text Note",
+		lipgloss.JoinVertical(
+			lipgloss.Left,
+			f.description.View(),
+			strings.Repeat(" ", 64),
+			f.content.View(),
+			lipgloss.PlaceHorizontal(
+				lipgloss.Width(f.content.View()),
+				lipgloss.Right,
+				fmt.Sprintf("%d/%d", f.content.Length(), f.content.CharLimit),
+			),
+			" ",
+			f.help.ShortHelpView(
+				[]key.Binding{
+					key.NewBinding(
+						key.WithKeys("esc"),
+						key.WithHelp("[esc]", "cancel"),
+					),
+					key.NewBinding(
+						key.WithKeys("ctrl+s"),
+						key.WithHelp("[ctrl+s]", "save"),
+					),
+				},
+			),
+		),
+	)
+}
+
+func (f textForm) createResource() ResourceItem {
+	return ResourceItem{resType: textType, description: f.description.Value(), resID: f.resID}
+}
+
+type outputForm struct {
+	ctx           context.Context
+	width, height int
+	index         int
+	description   textinput.Model
+	content       textarea.Model
+	cancelled     bool
+	cli           *CLI
+	help          help.Model
+	resID         int
+}
+
+func newOutputModel(ctx context.Context, cli *CLI) outputForm {
+	o := outputForm{
+		ctx: ctx,
+		cli: cli,
+	}
+	return o
+}
+
+func (o outputForm) Init() tea.Cmd {
 	return nil
 }
 
-//func (f Form) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-//	var cmd tea.Cmd
-//	switch msg := msg.(type) {
-//	case column:
-//		f.col = msg
-//		f.col.list.Index()
-//	case tea.KeyMsg:
-//		switch {
-//		case key.Matches(msg, keys.Quit):
-//			return f, tea.Quit
-//
-//		case key.Matches(msg, keys.Back):
-//			return board.Update(nil)
-//		case key.Matches(msg, keys.Enter):
-//			if f.title.Focused() {
-//				f.title.Blur()
-//				f.description.Focus()
-//				return f, textarea.Blink
-//			}
-//			// Return the completed form as a message.
-//			return board.Update(f)
-//		}
-//	}
-//	if f.title.Focused() {
-//		f.title, cmd = f.title.Update(msg)
-//		return f, cmd
-//	}
-//	f.description, cmd = f.description.Update(msg)
-//	return f, cmd
-//}
+func (o outputForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return nil, nil
+}
 
-func (f Form) View() string {
-	return lipgloss.JoinVertical(
-		lipgloss.Left,
-		"Create a new task",
-		f.title.View(),
-		f.description.View(),
-		f.help.View(keys))
+func (o outputForm) View() string {
+	return ""
 }

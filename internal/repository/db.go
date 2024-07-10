@@ -80,11 +80,11 @@ func (d *DBStorage) GetUserHashPass(ctx context.Context, uid int) (string, error
 	return *pass, nil
 }
 
-func (d *DBStorage) SetText(ctx context.Context, res *models.Resource, piece *models.Piece) error {
+func (d *DBStorage) SetText(ctx context.Context, res *models.Resource, piece *models.Piece) (*models.Resource, error) {
 
 	tx, err := d.conn.Beginx()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// insert into pieces
 	sqlInsert := `INSERT INTO pieces (content, iv, salt) VALUES ($1, $2, $3) RETURNING id`
@@ -92,17 +92,19 @@ func (d *DBStorage) SetText(ctx context.Context, res *models.Resource, piece *mo
 	var uuid string
 	if err := d.conn.GetContext(ctx, &uuid, sqlInsert, piece.Content, piece.IV, piece.Salt); err != nil {
 		tx.Rollback()
-		return err
+		return nil, err
 	}
 
 	// insert into resources
-	sqlInsert = `INSERT INTO resources (piece_uuid, user_id, type, meta) VALUES ($1, $2, $3, $4)`
-	if _, err := d.conn.ExecContext(ctx, sqlInsert, uuid, res.UserID, res.Type, res.Meta); err != nil {
+	sqlInsert = `INSERT INTO resources (piece_uuid, user_id, type, meta) VALUES ($1, $2, $3, $4) RETURNING id`
+	var id int
+	if err := d.conn.GetContext(ctx, &id, sqlInsert, uuid, res.UserID, res.Type, res.Meta); err != nil {
 		tx.Rollback()
-		return err
+		return nil, err
 	}
 	tx.Commit()
-	return nil
+	res.ID = id
+	return res, nil
 }
 
 func (d *DBStorage) GetText(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error) {

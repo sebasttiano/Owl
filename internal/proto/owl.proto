@@ -61,8 +61,8 @@ message TextMeta {
   string description = 2;
 }
 message TextMsg {
-  string text = 1;
-  string description = 2;
+  string text = 2;
+  string description = 3;
 }
 
 message SetTextRequest {
@@ -82,12 +82,16 @@ message GetAllTextsResponse {
   repeated TextMeta texts = 1;
 }
 
+message SetTextResponse {
+  TextMeta text = 1;
+}
+
 message DeleteTextRequest {
   int32 id = 2;
 }
 
 service Text {
-  rpc SetText(SetTextRequest) returns (google.protobuf.Empty);
+  rpc SetText(SetTextRequest) returns (SetTextResponse);
   rpc GetText(GetTextRequest) returns (GetTextResponse);
   rpc GetAllTexts(google.protobuf.Empty) returns (GetAllTextsResponse);
   rpc DeleteText(DeleteTextRequest) returns (google.protobuf.Empty);

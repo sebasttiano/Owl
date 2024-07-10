@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (t *TextServer) SetText(ctx context.Context, in *pb.SetTextRequest) (*emptypb.Empty, error) {
+func (t *TextServer) SetText(ctx context.Context, in *pb.SetTextRequest) (*pb.SetTextResponse, error) {
 
 	userId, err := getUserIDFromContext(ctx)
 	if err != nil {
@@ -20,9 +20,13 @@ func (t *TextServer) SetText(ctx context.Context, in *pb.SetTextRequest) (*empty
 		Description: in.Text.Description,
 		Content:     in.Text.Text,
 	}
-	t.Text.SetText(ctx, resource)
 
-	return nil, nil
+	resp, err := t.Text.SetText(ctx, resource)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.SetTextResponse{Text: &pb.TextMeta{Id: int32(resp.ID), Description: resp.Description}}
+	return response, nil
 }
 
 func (t *TextServer) GetText(ctx context.Context, in *pb.GetTextRequest) (*pb.GetTextResponse, error) {
@@ -42,7 +46,7 @@ func (t *TextServer) GetText(ctx context.Context, in *pb.GetTextRequest) (*pb.Ge
 
 }
 
-func (t *TextServer) GetAllTexts(ctx context.Context, in *emptypb.Empty) (*pb.GetAllTextsResponse, error) {
+func (t *TextServer) GetAllTexts(ctx context.Context, _ *emptypb.Empty) (*pb.GetAllTextsResponse, error) {
 
 	userId, err := getUserIDFromContext(ctx)
 	if err != nil {

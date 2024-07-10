@@ -1,23 +1,20 @@
 package cli
 
+import (
+	"fmt"
+)
+
 type ResourceItem struct {
 	resType     resType
+	resID       int
 	title       string
 	description string
+	index       int
 }
 
 func NewResourceItem(t resType, title, description string) ResourceItem {
 	return ResourceItem{resType: t, title: title, description: description}
 }
-
-//
-//func (t *Task) Next() {
-//	if t.status == done {
-//		t.status = todo
-//	} else {
-//		t.status++
-//	}
-//}
 
 // implement the list.Item interface
 func (t ResourceItem) FilterValue() string {
@@ -30,4 +27,9 @@ func (t ResourceItem) Title() string {
 
 func (t ResourceItem) Description() string {
 	return t.description
+}
+
+func (t ResourceItem) MakeTitle() string {
+	t.title = fmt.Sprintf("ID: %d", t.resID)
+	return t.title
 }
