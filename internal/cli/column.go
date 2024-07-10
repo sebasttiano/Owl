@@ -6,6 +6,8 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	pb "github.com/sebasttiano/Owl/internal/proto"
+	"google.golang.org/grpc/status"
 )
 
 const APPEND = -1
@@ -62,22 +64,11 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return t.Update(nil)
 		case key.Matches(msg, keys.Enter):
 			if len(c.list.VisibleItems()) != 0 {
-				_ = c.list.SelectedItem().(ResourceItem)
+				item := c.list.SelectedItem().(ResourceItem)
+				o := newOutputModel(c.ctx, c.cli, &c, item.resID)
+				o.getContent()
+				return o.Update(nil)
 			}
-			//return c, c.MoveToNext()
-		//case key.Matches(msg, keys.Edit):
-		//	if len(c.list.VisibleItems()) != 0 {
-		//		task := c.list.SelectedItem().(Task)
-		//		f := NewForm(task.title, task.description)
-		//		f.index = c.list.Index()
-		//		f.col = c
-		//		return f.Update(nil)
-		//	}
-		//case key.Matches(msg, keys.New):
-		//	f := newDefaultForm()
-		//	f.index = APPEND
-		//	f.col = c
-		//	return f.Update(nil)
 		case key.Matches(msg, keys.Delete):
 			return c, c.DeleteCurrent()
 			//case key.Matches(msg, keys.Enter):
@@ -94,9 +85,16 @@ func (c column) View() string {
 
 func (c *column) DeleteCurrent() tea.Cmd {
 	if len(c.list.VisibleItems()) > 0 {
+		item := c.list.SelectedItem().(ResourceItem)
+		request := &pb.DeleteTextRequest{Id: int32(item.resID)}
+		_, err := c.cli.Client.Text.DeleteText(c.ctx, request)
+		if err != nil {
+			if _, ok := status.FromError(err); ok {
+				return tea.Quit
+			}
+		}
 		c.list.RemoveItem(c.list.Index())
 	}
-
 	var cmd tea.Cmd
 	c.list, cmd = c.list.Update(nil)
 	return cmd
@@ -104,9 +102,9 @@ func (c *column) DeleteCurrent() tea.Cmd {
 
 func (c *column) Set(i int, r ResourceItem) tea.Cmd {
 	if i != APPEND {
-		return c.list.SetItem(i, &r)
+		return c.list.SetItem(i, r)
 	}
-	return c.list.InsertItem(APPEND, &r)
+	return c.list.InsertItem(APPEND, r)
 }
 
 func (c *column) setSize(width, height int) {
@@ -128,25 +126,3 @@ func (c *column) getStyle() lipgloss.Style {
 		Height(c.height).
 		Width(c.width)
 }
-
-//type moveMsg struct {
-//	Task
-//}
-
-//func (c *column) MoveToNext() tea.Cmd {
-//	var task Task
-//	var ok bool
-//	// If nothing is selected, the SelectedItem will return Nil.
-//	if task, ok = c.list.SelectedItem().(Task); !ok {
-//		return nil
-//	}
-//	// move item
-//	c.list.RemoveItem(c.list.Index())
-//	task.status = c.status.getNext()
-//
-//	// refresh list
-//	var cmd tea.Cmd
-//	c.list, cmd = c.list.Update(nil)
-//
-//	return tea.Sequence(cmd, func() tea.Msg { return moveMsg{task} })
-//}

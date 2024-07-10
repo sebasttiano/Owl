@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS resources(
                                       CONSTRAINT fk_piece
                                           FOREIGN KEY (piece_uuid)
                                               REFERENCES pieces(id)
-
+                                      ON DELETE CASCADE
 );
 
 

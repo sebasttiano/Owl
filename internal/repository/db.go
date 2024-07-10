@@ -133,3 +133,20 @@ func (d *DBStorage) GetAllTexts(ctx context.Context, uid int) ([]*models.Resourc
 	}
 	return resources, nil
 }
+
+func (d *DBStorage) DelText(ctx context.Context, res *models.Resource) error {
+
+	tx, err := d.conn.Beginx()
+	if err != nil {
+		return err
+	}
+	// del resource
+	sqlDelete := `DELETE FROM resources WHERE id = $1 AND user_id = $2`
+	_, err = d.conn.ExecContext(ctx, sqlDelete, res.ID, res.UserID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}

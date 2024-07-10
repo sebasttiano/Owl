@@ -114,7 +114,7 @@ func (m *MainBoard) updateColumn(resType ...resType) error {
 			for i, text := range resp.GetTexts() {
 				item := ResourceItem{resType: textType, resID: int(text.Id), index: i, description: text.Description}
 				item.title = item.MakeTitle()
-				m.cols[textType].list.InsertItem(i, &item)
+				m.cols[textType].list.InsertItem(i, item)
 			}
 		}
 	}
@@ -156,13 +156,6 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cols[m.focused].Blur()
 			m.focused = m.focused.getNext()
 			m.cols[m.focused].Focus()
-			//case key.Matches(msg, keys.Enter):
-			//	switch option := s.list.SelectedItem().(type) {
-			//	case signInModel:
-			//		return option.Update(nil)
-			//	case signUpModel:
-			//		return option.Update(nil)
-			//	}
 		}
 	case textForm:
 		m.cols[textType].Set(APPEND, msg.createResource())

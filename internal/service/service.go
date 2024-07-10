@@ -20,6 +20,7 @@ type ResourceRepo interface {
 	GetUserHashPass(ctx context.Context, uid int) (string, error)
 	SetText(ctx context.Context, res *models.Resource, piece *models.Piece) (*models.Resource, error)
 	GetText(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error)
+	DelText(ctx context.Context, res *models.Resource) error
 	GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error)
 }
 

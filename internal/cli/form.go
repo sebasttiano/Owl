@@ -169,30 +169,64 @@ type outputForm struct {
 	ctx           context.Context
 	width, height int
 	index         int
-	description   textinput.Model
-	content       textarea.Model
 	cancelled     bool
 	cli           *CLI
 	help          help.Model
 	resID         int
+	col           *column
+	content       string
 }
 
-func newOutputModel(ctx context.Context, cli *CLI) outputForm {
-	o := outputForm{
-		ctx: ctx,
-		cli: cli,
+func newOutputModel(ctx context.Context, cli *CLI, col *column, id int) *outputForm {
+	o := &outputForm{
+		col:   col,
+		ctx:   ctx,
+		cli:   cli,
+		resID: id,
 	}
 	return o
 }
 
-func (o outputForm) Init() tea.Cmd {
+func (o *outputForm) Init() tea.Cmd {
 	return nil
 }
 
-func (o outputForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	return nil, nil
+func (o *outputForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		o.width = msg.Width
+		o.height = msg.Height
+		o.help.Width = msg.Width
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keys.Quit):
+			o.cancelled = true
+			return o, tea.Quit
+		case key.Matches(msg, keys.Back):
+			return mainBoard.Update(nil)
+		}
+	}
+	return o, nil
 }
 
-func (o outputForm) View() string {
-	return ""
+func (o *outputForm) getContent() {
+	request := &pb.GetTextRequest{Id: int32(o.resID)}
+	resp, _ := o.cli.Client.Text.GetText(o.ctx, request)
+	o.content = resp.Text.GetText()
+}
+
+func (o *outputForm) View() string {
+	return form(o.width, o.height, o.col.list.Title, o.content)
+	//return form(
+	//	o.width, o.height,
+	//	"Register to Owl",
+	//	lipgloss.JoinVertical(
+	//		lipgloss.Left,
+	//		s.username.View(),
+	//		strings.Repeat(" ", 64),
+	//		s.password.View(),
+	//		strings.Repeat(" ", 64),
+	//		s.repeatPassword.View(),
+	//	),
+	//)
 }

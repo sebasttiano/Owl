@@ -51,7 +51,7 @@ type TextServ interface {
 	SetText(ctx context.Context, res models.Resource) (*models.Resource, error)
 	GetText(ctx context.Context, res *models.Resource) (*models.Resource, error)
 	GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error)
-	DeleteText(ctx context.Context, id int) error
+	DeleteText(ctx context.Context, res *models.Resource) error
 }
 
 type CardServ interface {

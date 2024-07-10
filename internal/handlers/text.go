@@ -65,5 +65,14 @@ func (t *TextServer) GetAllTexts(ctx context.Context, _ *emptypb.Empty) (*pb.Get
 }
 
 func (t *TextServer) DeleteText(ctx context.Context, in *pb.DeleteTextRequest) (*emptypb.Empty, error) {
+	userId, err := getUserIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &models.Resource{ID: int(in.Id), UserID: userId}
+	if err := t.Text.DeleteText(ctx, res); err != nil {
+		return nil, err
+	}
 	return nil, nil
 }

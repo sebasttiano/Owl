@@ -15,6 +15,7 @@ var (
 	ErrSetText     = errors.New("failed to save text")
 	ErrGetText     = errors.New("failed to get text")
 	ErrGetAllTexts = errors.New("failed to get all texts meta")
+	ErrDelText     = errors.New("failed to delete text")
 )
 
 func (t *TextService) SetText(ctx context.Context, data models.Resource) (*models.Resource, error) {
@@ -91,6 +92,10 @@ func (t *TextService) GetAllTexts(ctx context.Context, uid int) ([]*models.Resou
 	return resources, nil
 }
 
-func (t *TextService) DeleteText(ctx context.Context, id int) error {
+func (t *TextService) DeleteText(ctx context.Context, res *models.Resource) error {
+	if err := t.Repo.DelText(ctx, res); err != nil {
+		logger.Log.Error("failed to delete resource from repo", zap.Error(err))
+		return fmt.Errorf("%w: %v", ErrDelText, err)
+	}
 	return nil
 }
