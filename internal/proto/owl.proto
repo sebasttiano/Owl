@@ -56,43 +56,44 @@ service Binary {
   rpc DeleteBinary(DeleteBinaryRequest) returns (google.protobuf.Empty);
 }
 
-message TextMeta {
+message ResourceMeta {
   int32 id = 1;
   string description = 2;
 }
-message TextMsg {
-  string text = 2;
-  string description = 3;
+message ResourceMsg {
+  string content = 1;
+  string description = 2;
+  string type = 3;
 }
 
-message SetTextRequest {
-  TextMsg text = 2;
+message SetResourceRequest {
+  ResourceMsg resource = 2;
 }
 
-message GetTextRequest {
+message GetResourceRequest {
   int32 id = 2;
 }
 
-message GetTextResponse {
-  TextMsg text = 1;
+message GetResourceResponse {
+  ResourceMsg resource = 1;
 }
 
 
-message GetAllTextsResponse {
-  repeated TextMeta texts = 1;
+message GetAllResourcesResponse {
+  repeated ResourceMeta resources = 1;
 }
 
-message SetTextResponse {
-  TextMeta text = 1;
+message SetResourceResponse {
+  ResourceMeta resource = 1;
 }
 
-message DeleteTextRequest {
+message DeleteResourceRequest {
   int32 id = 2;
 }
 
-service Text {
-  rpc SetText(SetTextRequest) returns (SetTextResponse);
-  rpc GetText(GetTextRequest) returns (GetTextResponse);
-  rpc GetAllTexts(google.protobuf.Empty) returns (GetAllTextsResponse);
-  rpc DeleteText(DeleteTextRequest) returns (google.protobuf.Empty);
+service Resource {
+  rpc SetResource(SetResourceRequest) returns (SetResourceResponse);
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse);
+  rpc GetAllResources(google.protobuf.Empty) returns (GetAllResourcesResponse);
+  rpc DeleteResource(DeleteResourceRequest) returns (google.protobuf.Empty);
 }

@@ -107,11 +107,11 @@ func (m *MainBoard) updateColumn(resType ...resType) error {
 	for _, _type := range resType {
 		switch _type {
 		case textType:
-			resp, err := m.cli.Client.Text.GetAllTexts(m.ctx, &emptypb.Empty{})
+			resp, err := m.cli.Client.Resource.GetAllResources(m.ctx, &emptypb.Empty{})
 			if err != nil {
 				return err
 			}
-			for i, text := range resp.GetTexts() {
+			for i, text := range resp.GetResources() {
 				item := ResourceItem{resType: textType, resID: int(text.Id), index: i, description: text.Description}
 				item.title = item.MakeTitle()
 				m.cols[textType].list.InsertItem(i, item)
@@ -157,7 +157,7 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.focused = m.focused.getNext()
 			m.cols[m.focused].Focus()
 		}
-	case textForm:
+	case *textForm:
 		m.cols[textType].Set(APPEND, msg.createResource())
 		return m, nil
 	case ErrorModel:

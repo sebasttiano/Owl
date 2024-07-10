@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/sebasttiano/Owl/internal/models"
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"google.golang.org/grpc/status"
 	"strings"
@@ -43,7 +44,7 @@ type textForm struct {
 	resID         int
 }
 
-func newTextModel(ctx context.Context, cli *CLI) textForm {
+func newTextModel(ctx context.Context, cli *CLI) *textForm {
 	m := textForm{
 		ctx:         ctx,
 		cli:         cli,
@@ -61,16 +62,16 @@ func newTextModel(ctx context.Context, cli *CLI) textForm {
 	m.content.SetWidth(64)
 
 	m.description.Focus()
-	return m
+	return &m
 }
 
 // Init implements tea.Model.
-func (f textForm) Init() tea.Cmd {
+func (f *textForm) Init() tea.Cmd {
 	return textarea.Blink
 }
 
 // Update implements tea.Model.
-func (f textForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (f *textForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var contentCmd tea.Cmd
 	var descriptionCmd tea.Cmd
 	f.content, contentCmd = f.content.Update(msg)
@@ -106,7 +107,7 @@ func (f textForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return f, f.saveTextToServer(f.description.Value(), f.content.Value())
 			}
 		}
-	case textForm:
+	case *textForm:
 		return mainBoard.Update(f)
 	case ErrorModel:
 		return mainBoard.Update(msg)
@@ -115,25 +116,26 @@ func (f textForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return f, tea.Batch(descriptionCmd, contentCmd)
 }
 
-func (f textForm) saveTextToServer(description, content string) tea.Cmd {
+func (f *textForm) saveTextToServer(description, content string) tea.Cmd {
 	return func() tea.Msg {
-		request := pb.SetTextRequest{Text: &pb.TextMsg{Text: content, Description: description}}
-		resp, err := f.cli.Client.Text.SetText(f.ctx, &request)
+		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: content, Description: description, Type: string(models.Text)}}
+		resp, err := f.cli.Client.Resource.SetResource(f.ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
 				return NewErrorModel(e.Err())
 			}
 		}
-		f.resID = int(resp.Text.Id)
+
+		f.resID = int(resp.Resource.GetId())
 		return f
 	}
 }
 
 // View implements tea.Model.
-func (f textForm) View() string {
+func (f *textForm) View() string {
 	return form(
 		f.width, f.height,
-		"Text Note",
+		"Resource Note",
 		lipgloss.JoinVertical(
 			lipgloss.Left,
 			f.description.View(),
@@ -161,8 +163,10 @@ func (f textForm) View() string {
 	)
 }
 
-func (f textForm) createResource() ResourceItem {
-	return ResourceItem{resType: textType, description: f.description.Value(), resID: f.resID}
+func (f *textForm) createResource() ResourceItem {
+	item := ResourceItem{resType: textType, description: f.description.Value(), resID: f.resID}
+	item.title = item.MakeTitle()
+	return item
 }
 
 type outputForm struct {
@@ -210,9 +214,9 @@ func (o *outputForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (o *outputForm) getContent() {
-	request := &pb.GetTextRequest{Id: int32(o.resID)}
-	resp, _ := o.cli.Client.Text.GetText(o.ctx, request)
-	o.content = resp.Text.GetText()
+	request := &pb.GetResourceRequest{Id: int32(o.resID)}
+	resp, _ := o.cli.Client.Resource.GetResource(o.ctx, request)
+	o.content = resp.Resource.GetContent()
 }
 
 func (o *outputForm) View() string {

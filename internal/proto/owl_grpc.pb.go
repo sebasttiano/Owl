@@ -348,200 +348,200 @@ var Binary_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Text_SetText_FullMethodName     = "/main.Text/SetText"
-	Text_GetText_FullMethodName     = "/main.Text/GetText"
-	Text_GetAllTexts_FullMethodName = "/main.Text/GetAllTexts"
-	Text_DeleteText_FullMethodName  = "/main.Text/DeleteText"
+	Resource_SetResource_FullMethodName     = "/main.Resource/SetResource"
+	Resource_GetResource_FullMethodName     = "/main.Resource/GetResource"
+	Resource_GetAllResources_FullMethodName = "/main.Resource/GetAllResources"
+	Resource_DeleteResource_FullMethodName  = "/main.Resource/DeleteResource"
 )
 
-// TextClient is the client API for Text service.
+// ResourceClient is the client API for Resource service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type TextClient interface {
-	SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*SetTextResponse, error)
-	GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error)
-	GetAllTexts(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllTextsResponse, error)
-	DeleteText(ctx context.Context, in *DeleteTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+type ResourceClient interface {
+	SetResource(ctx context.Context, in *SetResourceRequest, opts ...grpc.CallOption) (*SetResourceResponse, error)
+	GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error)
+	GetAllResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllResourcesResponse, error)
+	DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-type textClient struct {
+type resourceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewTextClient(cc grpc.ClientConnInterface) TextClient {
-	return &textClient{cc}
+func NewResourceClient(cc grpc.ClientConnInterface) ResourceClient {
+	return &resourceClient{cc}
 }
 
-func (c *textClient) SetText(ctx context.Context, in *SetTextRequest, opts ...grpc.CallOption) (*SetTextResponse, error) {
-	out := new(SetTextResponse)
-	err := c.cc.Invoke(ctx, Text_SetText_FullMethodName, in, out, opts...)
+func (c *resourceClient) SetResource(ctx context.Context, in *SetResourceRequest, opts ...grpc.CallOption) (*SetResourceResponse, error) {
+	out := new(SetResourceResponse)
+	err := c.cc.Invoke(ctx, Resource_SetResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *textClient) GetText(ctx context.Context, in *GetTextRequest, opts ...grpc.CallOption) (*GetTextResponse, error) {
-	out := new(GetTextResponse)
-	err := c.cc.Invoke(ctx, Text_GetText_FullMethodName, in, out, opts...)
+func (c *resourceClient) GetResource(ctx context.Context, in *GetResourceRequest, opts ...grpc.CallOption) (*GetResourceResponse, error) {
+	out := new(GetResourceResponse)
+	err := c.cc.Invoke(ctx, Resource_GetResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *textClient) GetAllTexts(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllTextsResponse, error) {
-	out := new(GetAllTextsResponse)
-	err := c.cc.Invoke(ctx, Text_GetAllTexts_FullMethodName, in, out, opts...)
+func (c *resourceClient) GetAllResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllResourcesResponse, error) {
+	out := new(GetAllResourcesResponse)
+	err := c.cc.Invoke(ctx, Resource_GetAllResources_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *textClient) DeleteText(ctx context.Context, in *DeleteTextRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *resourceClient) DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, Text_DeleteText_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Resource_DeleteResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// TextServer is the server API for Text service.
-// All implementations must embed UnimplementedTextServer
+// ResourceServer is the server API for Resource service.
+// All implementations must embed UnimplementedResourceServer
 // for forward compatibility
-type TextServer interface {
-	SetText(context.Context, *SetTextRequest) (*SetTextResponse, error)
-	GetText(context.Context, *GetTextRequest) (*GetTextResponse, error)
-	GetAllTexts(context.Context, *emptypb.Empty) (*GetAllTextsResponse, error)
-	DeleteText(context.Context, *DeleteTextRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedTextServer()
+type ResourceServer interface {
+	SetResource(context.Context, *SetResourceRequest) (*SetResourceResponse, error)
+	GetResource(context.Context, *GetResourceRequest) (*GetResourceResponse, error)
+	GetAllResources(context.Context, *emptypb.Empty) (*GetAllResourcesResponse, error)
+	DeleteResource(context.Context, *DeleteResourceRequest) (*emptypb.Empty, error)
+	mustEmbedUnimplementedResourceServer()
 }
 
-// UnimplementedTextServer must be embedded to have forward compatible implementations.
-type UnimplementedTextServer struct {
+// UnimplementedResourceServer must be embedded to have forward compatible implementations.
+type UnimplementedResourceServer struct {
 }
 
-func (UnimplementedTextServer) SetText(context.Context, *SetTextRequest) (*SetTextResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetText not implemented")
+func (UnimplementedResourceServer) SetResource(context.Context, *SetResourceRequest) (*SetResourceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetResource not implemented")
 }
-func (UnimplementedTextServer) GetText(context.Context, *GetTextRequest) (*GetTextResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetText not implemented")
+func (UnimplementedResourceServer) GetResource(context.Context, *GetResourceRequest) (*GetResourceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetResource not implemented")
 }
-func (UnimplementedTextServer) GetAllTexts(context.Context, *emptypb.Empty) (*GetAllTextsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllTexts not implemented")
+func (UnimplementedResourceServer) GetAllResources(context.Context, *emptypb.Empty) (*GetAllResourcesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllResources not implemented")
 }
-func (UnimplementedTextServer) DeleteText(context.Context, *DeleteTextRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteText not implemented")
+func (UnimplementedResourceServer) DeleteResource(context.Context, *DeleteResourceRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteResource not implemented")
 }
-func (UnimplementedTextServer) mustEmbedUnimplementedTextServer() {}
+func (UnimplementedResourceServer) mustEmbedUnimplementedResourceServer() {}
 
-// UnsafeTextServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to TextServer will
+// UnsafeResourceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ResourceServer will
 // result in compilation errors.
-type UnsafeTextServer interface {
-	mustEmbedUnimplementedTextServer()
+type UnsafeResourceServer interface {
+	mustEmbedUnimplementedResourceServer()
 }
 
-func RegisterTextServer(s grpc.ServiceRegistrar, srv TextServer) {
-	s.RegisterService(&Text_ServiceDesc, srv)
+func RegisterResourceServer(s grpc.ServiceRegistrar, srv ResourceServer) {
+	s.RegisterService(&Resource_ServiceDesc, srv)
 }
 
-func _Text_SetText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetTextRequest)
+func _Resource_SetResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetResourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TextServer).SetText(ctx, in)
+		return srv.(ResourceServer).SetResource(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Text_SetText_FullMethodName,
+		FullMethod: Resource_SetResource_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TextServer).SetText(ctx, req.(*SetTextRequest))
+		return srv.(ResourceServer).SetResource(ctx, req.(*SetResourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Text_GetText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTextRequest)
+func _Resource_GetResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetResourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TextServer).GetText(ctx, in)
+		return srv.(ResourceServer).GetResource(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Text_GetText_FullMethodName,
+		FullMethod: Resource_GetResource_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TextServer).GetText(ctx, req.(*GetTextRequest))
+		return srv.(ResourceServer).GetResource(ctx, req.(*GetResourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Text_GetAllTexts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Resource_GetAllResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TextServer).GetAllTexts(ctx, in)
+		return srv.(ResourceServer).GetAllResources(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Text_GetAllTexts_FullMethodName,
+		FullMethod: Resource_GetAllResources_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TextServer).GetAllTexts(ctx, req.(*emptypb.Empty))
+		return srv.(ResourceServer).GetAllResources(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Text_DeleteText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteTextRequest)
+func _Resource_DeleteResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteResourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TextServer).DeleteText(ctx, in)
+		return srv.(ResourceServer).DeleteResource(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Text_DeleteText_FullMethodName,
+		FullMethod: Resource_DeleteResource_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TextServer).DeleteText(ctx, req.(*DeleteTextRequest))
+		return srv.(ResourceServer).DeleteResource(ctx, req.(*DeleteResourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Text_ServiceDesc is the grpc.ServiceDesc for Text service.
+// Resource_ServiceDesc is the grpc.ServiceDesc for Resource service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Text_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "main.Text",
-	HandlerType: (*TextServer)(nil),
+var Resource_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "main.Resource",
+	HandlerType: (*ResourceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SetText",
-			Handler:    _Text_SetText_Handler,
+			MethodName: "SetResource",
+			Handler:    _Resource_SetResource_Handler,
 		},
 		{
-			MethodName: "GetText",
-			Handler:    _Text_GetText_Handler,
+			MethodName: "GetResource",
+			Handler:    _Resource_GetResource_Handler,
 		},
 		{
-			MethodName: "GetAllTexts",
-			Handler:    _Text_GetAllTexts_Handler,
+			MethodName: "GetAllResources",
+			Handler:    _Resource_GetAllResources_Handler,
 		},
 		{
-			MethodName: "DeleteText",
-			Handler:    _Text_DeleteText_Handler,
+			MethodName: "DeleteResource",
+			Handler:    _Resource_DeleteResource_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

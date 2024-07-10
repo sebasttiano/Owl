@@ -71,8 +71,6 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case key.Matches(msg, keys.Delete):
 			return c, c.DeleteCurrent()
-			//case key.Matches(msg, keys.Enter):
-			//	return c, c.MoveToNext()
 		}
 	}
 	c.list, cmd = c.list.Update(msg)
@@ -86,8 +84,8 @@ func (c column) View() string {
 func (c *column) DeleteCurrent() tea.Cmd {
 	if len(c.list.VisibleItems()) > 0 {
 		item := c.list.SelectedItem().(ResourceItem)
-		request := &pb.DeleteTextRequest{Id: int32(item.resID)}
-		_, err := c.cli.Client.Text.DeleteText(c.ctx, request)
+		request := &pb.DeleteResourceRequest{Id: int32(item.resID)}
+		_, err := c.cli.Client.Resource.DeleteResource(c.ctx, request)
 		if err != nil {
 			if _, ok := status.FromError(err); ok {
 				return tea.Quit

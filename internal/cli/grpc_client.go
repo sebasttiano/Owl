@@ -12,7 +12,7 @@ import (
 type GRPCClient struct {
 	Auth     pb.AuthClient
 	Binary   pb.BinaryClient
-	Text     pb.TextClient
+	Resource pb.ResourceClient
 	conn     *grpc.ClientConn
 	username string
 	password string
@@ -21,20 +21,15 @@ type GRPCClient struct {
 // NewGRPCClient - конструктор для GRPCClient
 func NewGRPCClient(conn *grpc.ClientConn) (*GRPCClient, error) {
 	// устанавливаем соединение с сервером
-	//conn, err := grpc.NewClient(serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	//if err != nil {
-	//	logger.Log.Error("failed to create grpc cli", zap.Error(err))
-	//	return nil, fmt.Errorf("%w: %v", ErrInitGRPSClient, err)
-	//}
 	auth := pb.NewAuthClient(conn)
 	binary := pb.NewBinaryClient(conn)
-	text := pb.NewTextClient(conn)
+	text := pb.NewResourceClient(conn)
 
 	return &GRPCClient{
-		Auth:   auth,
-		Binary: binary,
-		Text:   text,
-		conn:   conn,
+		Auth:     auth,
+		Binary:   binary,
+		Resource: text,
+		conn:     conn,
 	}, nil
 }
 

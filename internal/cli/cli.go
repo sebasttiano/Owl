@@ -75,28 +75,18 @@ func (c *CLI) Run() error {
 
 func AuthMethods() map[string]bool {
 	const (
-		textMethodsPath     = "/main.Text/"
+		resourceMethodsPath = "/main.Resource/"
 		binaryMethodsPath   = "/main.Binary/"
-		cardMethodsPath     = "/main.Card/"
-		passwordMethodsPath = "/main.Password/"
 	)
 
 	return map[string]bool{
-		textMethodsPath + "SetText":             true,
-		textMethodsPath + "GetText":             true,
-		textMethodsPath + "GetAllTexts":         true,
-		textMethodsPath + "DeleteText":          true,
+		resourceMethodsPath + "SetResource":     true,
+		resourceMethodsPath + "GetResource":     true,
+		resourceMethodsPath + "GetAllResources": true,
+		resourceMethodsPath + "DeleteResource":  true,
 		binaryMethodsPath + "SetBinary":         true,
 		binaryMethodsPath + "GetBinary":         true,
 		binaryMethodsPath + "GetAllBinaries":    true,
 		binaryMethodsPath + "DeleteBinary":      true,
-		cardMethodsPath + "SetCard":             true,
-		cardMethodsPath + "GetCard":             true,
-		cardMethodsPath + "GetAllCards":         true,
-		cardMethodsPath + "DeleteCard":          true,
-		passwordMethodsPath + "SetPassword":     true,
-		passwordMethodsPath + "GetPassword":     true,
-		passwordMethodsPath + "GetAllPasswords": true,
-		passwordMethodsPath + "DeletePassword":  true,
 	}
 }

@@ -80,7 +80,7 @@ func (d *DBStorage) GetUserHashPass(ctx context.Context, uid int) (string, error
 	return *pass, nil
 }
 
-func (d *DBStorage) SetText(ctx context.Context, res *models.Resource, piece *models.Piece) (*models.Resource, error) {
+func (d *DBStorage) SetResource(ctx context.Context, res *models.Resource, piece *models.Piece) (*models.Resource, error) {
 
 	tx, err := d.conn.Beginx()
 	if err != nil {
@@ -107,11 +107,11 @@ func (d *DBStorage) SetText(ctx context.Context, res *models.Resource, piece *mo
 	return res, nil
 }
 
-func (d *DBStorage) GetText(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error) {
+func (d *DBStorage) GetResource(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error) {
 
 	// get resource
-	sqlSelect := `SELECT piece_uuid, type, meta FROM resources WHERE id = $1`
-	if err := d.conn.GetContext(ctx, res, sqlSelect, res.ID); err != nil {
+	sqlSelect := `SELECT piece_uuid, type, meta FROM resources WHERE id = $1 AND user_id = $2`
+	if err := d.conn.GetContext(ctx, res, sqlSelect, res.ID, res.UserID); err != nil {
 		return nil, nil, err
 	}
 
@@ -123,18 +123,18 @@ func (d *DBStorage) GetText(ctx context.Context, res *models.Resource) (*models.
 	}
 	return res, piece, nil
 }
-func (d *DBStorage) GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error) {
+func (d *DBStorage) GetAllResources(ctx context.Context, uid int) ([]*models.Resource, error) {
 
 	var resources []*models.Resource
 	// get resources
-	sqlSelect := `SELECT id, meta FROM resources WHERE user_id = $1`
+	sqlSelect := `SELECT id, meta, type FROM resources WHERE user_id = $1`
 	if err := d.conn.SelectContext(ctx, &resources, sqlSelect, uid); err != nil {
 		return nil, err
 	}
 	return resources, nil
 }
 
-func (d *DBStorage) DelText(ctx context.Context, res *models.Resource) error {
+func (d *DBStorage) DelResource(ctx context.Context, res *models.Resource) error {
 
 	tx, err := d.conn.Beginx()
 	if err != nil {

@@ -18,10 +18,10 @@ type AuthRepo interface {
 
 type ResourceRepo interface {
 	GetUserHashPass(ctx context.Context, uid int) (string, error)
-	SetText(ctx context.Context, res *models.Resource, piece *models.Piece) (*models.Resource, error)
-	GetText(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error)
-	DelText(ctx context.Context, res *models.Resource) error
-	GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error)
+	SetResource(ctx context.Context, res *models.Resource, piece *models.Piece) (*models.Resource, error)
+	GetResource(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error)
+	DelResource(ctx context.Context, res *models.Resource) error
+	GetAllResources(ctx context.Context, uid int) ([]*models.Resource, error)
 }
 
 type AuthService struct {
@@ -40,11 +40,11 @@ func NewBinaryService(repo ResourceRepo) *BinaryService {
 	return &BinaryService{Repo: repo}
 }
 
-type TextService struct {
+type ResourceService struct {
 	Cipher encrypted.Cipher
 	Repo   ResourceRepo
 }
 
-func NewTextService(repo ResourceRepo) *TextService {
-	return &TextService{Repo: repo, Cipher: encrypted.CFBCipher{}}
+func NewTextService(repo ResourceRepo) *ResourceService {
+	return &ResourceService{Repo: repo, Cipher: encrypted.CFBCipher{}}
 }

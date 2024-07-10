@@ -29,9 +29,9 @@ type BinaryServer struct {
 	pb.UnimplementedBinaryServer
 }
 
-type TextServer struct {
-	Text TextServ
-	pb.UnimplementedTextServer
+type ResourceServer struct {
+	Resource ResourceServ
+	pb.UnimplementedResourceServer
 }
 
 type Authenticator interface {
@@ -47,25 +47,11 @@ type BinaryServ interface {
 	DeleteBinary(ctx context.Context, id int) error
 }
 
-type TextServ interface {
-	SetText(ctx context.Context, res models.Resource) (*models.Resource, error)
-	GetText(ctx context.Context, res *models.Resource) (*models.Resource, error)
-	GetAllTexts(ctx context.Context, uid int) ([]*models.Resource, error)
-	DeleteText(ctx context.Context, res *models.Resource) error
-}
-
-type CardServ interface {
-	SetCard(ctx context.Context, uid string, data models.Resource) error
-	GetCard(ctx context.Context, id string) (models.Resource, error)
-	GetAllCards(ctx context.Context, uid string) ([]models.Resource, error)
-	DeleteCard(ctx context.Context, id string) error
-}
-
-type PasswordServ interface {
-	SetPassword(ctx context.Context, uid string, data models.Resource) error
-	GetPassword(ctx context.Context, id string) (models.Resource, error)
-	GetAllPasswords(ctx context.Context, uid string) ([]models.Resource, error)
-	DeletePassword(ctx context.Context, id string) error
+type ResourceServ interface {
+	SetResource(ctx context.Context, res models.Resource) (*models.Resource, error)
+	GetResource(ctx context.Context, res *models.Resource) (*models.Resource, error)
+	GetAllResources(ctx context.Context, uid int) ([]*models.Resource, error)
+	DeleteResource(ctx context.Context, res *models.Resource) error
 }
 
 func getUserIDFromContext(ctx context.Context) (int, error) {
