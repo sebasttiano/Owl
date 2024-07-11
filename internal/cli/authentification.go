@@ -23,7 +23,7 @@ var (
 	ErrRegisterPassMismatch = errors.New("passwords are not the same")
 )
 
-var signBoard SignBoard
+var signBoard *SignBoard
 
 func (c *CLI) GetUserCreds(ctx context.Context) (string, string, error) {
 
@@ -58,7 +58,7 @@ type SignBoard struct {
 	cli           *CLI
 }
 
-func NewSignBoard(c *CLI) SignBoard {
+func NewSignBoard(c *CLI) *SignBoard {
 	help := help.New()
 	help.ShowAll = true
 	signList := list.New([]list.Item{
@@ -68,14 +68,14 @@ func NewSignBoard(c *CLI) SignBoard {
 	signList.SetShowHelp(false)
 	signList.Title = "Do you have an account?"
 
-	return SignBoard{help: help, list: signList}
+	return &SignBoard{help: help, list: signList}
 }
 
-func (s SignBoard) Init() tea.Cmd {
+func (s *SignBoard) Init() tea.Cmd {
 	return nil
 }
 
-func (s SignBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *SignBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -97,12 +97,15 @@ func (s SignBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
+	case signUpModel:
+		s.list, cmd = s.list.Update(msg)
+		return s, cmd
 	}
 	s.list, cmd = s.list.Update(msg)
 	return s, cmd
 }
 
-func (s SignBoard) View() string {
+func (s *SignBoard) View() string {
 	if s.cancelled {
 		return ""
 	}
@@ -179,7 +182,7 @@ func (s signUpModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case ErrorModel:
 		return msg.Update(nil)
-	case SignBoard:
+	case *SignBoard:
 		msg.width = s.width
 		msg.height = s.height
 		msg.loaded = true
