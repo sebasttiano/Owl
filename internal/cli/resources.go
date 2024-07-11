@@ -9,11 +9,10 @@ type ResourceItem struct {
 	resID       int
 	title       string
 	description string
-	index       int
 }
 
-func NewResourceItem(t resType, title, description string) ResourceItem {
-	return ResourceItem{resType: t, title: title, description: description}
+func NewResourceItem(t resType, resID int, description string) ResourceItem {
+	return ResourceItem{resID: resID, resType: t, title: fmt.Sprintf("ID: %d", resID), description: description}
 }
 
 // implement the list.Item interface

@@ -45,6 +45,20 @@ type (
 		Type        ResourceType `json:"type"`
 		Description string       `json:"description"`
 	}
+
+	CardCreds struct {
+		Description string
+		CCN         string `json:"ccn"`
+		EXP         string `json:"exp"`
+		CVV         string `json:"cvv"`
+		Holder      string `json:"holder"`
+	}
+
+	Creds struct {
+		Description string
+		Username    string `json:"username"`
+		Password    string `json:"password"`
+	}
 )
 
 func (r *Resource) SetDescriptionFromMeta() {

@@ -59,6 +59,7 @@ service Binary {
 message ResourceMeta {
   int32 id = 1;
   string description = 2;
+  string type = 3;
 }
 message ResourceMsg {
   string content = 1;

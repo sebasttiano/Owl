@@ -59,14 +59,16 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.New):
-			t := newTextModel(c.ctx, c.cli)
-			t.index = APPEND
+			t := newModel(c.ctx, c.cli, c.resType)
 			return t.Update(nil)
 		case key.Matches(msg, keys.Enter):
 			if len(c.list.VisibleItems()) != 0 {
 				item := c.list.SelectedItem().(ResourceItem)
 				o := newOutputModel(c.ctx, c.cli, &c, item.resID)
-				o.getContent()
+				mod := o.getContent()
+				if mod != nil {
+					return mod, nil
+				}
 				return o.Update(nil)
 			}
 		case key.Matches(msg, keys.Delete):

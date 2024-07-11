@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/sebasttiano/Owl/internal/logger"
+	"github.com/sebasttiano/Owl/internal/models"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -102,23 +103,25 @@ func (m *MainBoard) Init() tea.Cmd {
 	return nil
 }
 
-func (m *MainBoard) updateColumn(resType ...resType) error {
+func (m *MainBoard) updateColumns() error {
 
-	for _, _type := range resType {
-		switch _type {
-		case textType:
-			resp, err := m.cli.Client.Resource.GetAllResources(m.ctx, &emptypb.Empty{})
-			if err != nil {
-				return err
-			}
-			for i, text := range resp.GetResources() {
-				item := ResourceItem{resType: textType, resID: int(text.Id), index: i, description: text.Description}
-				item.title = item.MakeTitle()
-				m.cols[textType].list.InsertItem(i, item)
-			}
+	resp, err := m.cli.Client.Resource.GetAllResources(m.ctx, &emptypb.Empty{})
+	if err != nil {
+		return err
+	}
+	for _, res := range resp.GetResources() {
+		switch res.GetType() {
+		case string(models.Text):
+			item := NewResourceItem(textType, int(res.Id), res.Description)
+			m.cols[textType].Set(APPEND, item)
+		case string(models.Card):
+			item := NewResourceItem(cardType, int(res.Id), res.Description)
+			m.cols[cardType].Set(APPEND, item)
+		case string(models.Password):
+			item := NewResourceItem(credType, int(res.Id), res.Description)
+			m.cols[credType].Set(APPEND, item)
 		}
 	}
-
 	return nil
 }
 
@@ -129,7 +132,7 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmds []tea.Cmd
 		m.help.Width = msg.Width - margin
 		if !m.loaded {
-			if err := m.updateColumn(textType); err != nil {
+			if err := m.updateColumns(); err != nil {
 				if e, ok := status.FromError(err); ok {
 					return NewErrorModel(e.Err()), nil
 				}
@@ -160,6 +163,12 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case *textForm:
 		m.cols[textType].Set(APPEND, msg.createResource())
 		return m, nil
+	case *cardForm:
+		m.cols[cardType].Set(APPEND, msg.createResource())
+		return m, nil
+	case *credForm:
+		m.cols[credType].Set(APPEND, msg.createResource())
+		return m, nil
 	case ErrorModel:
 		return msg.Update(nil)
 	}
@@ -186,5 +195,5 @@ func (m *MainBoard) View() string {
 		m.cols[cardType].View(),
 		m.cols[textType].View(),
 	)
-	return lipgloss.JoinVertical(lipgloss.Left, board, m.help.View(keys))
+	return lipgloss.JoinVertical(lipgloss.Left, board, m.help.View(keys), m.help.ShortHelpView([]key.Binding{keys.New, keys.Enter, keys.Delete}))
 }

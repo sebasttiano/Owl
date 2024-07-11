@@ -41,7 +41,7 @@ func (t *ResourceServer) GetResource(ctx context.Context, in *pb.GetResourceRequ
 		return nil, err
 	}
 
-	req := pb.GetResourceResponse{Resource: &pb.ResourceMsg{Content: resource.Content, Description: resource.Description}}
+	req := pb.GetResourceResponse{Resource: &pb.ResourceMsg{Content: resource.Content, Description: resource.Description, Type: string(resource.Type)}}
 	return &req, nil
 
 }
@@ -56,10 +56,9 @@ func (t *ResourceServer) GetAllResources(ctx context.Context, _ *emptypb.Empty) 
 	if err != nil {
 		return nil, err
 	}
-
 	resourcesMeta := make([]*pb.ResourceMeta, len(resources))
 	for i, resource := range resources {
-		resourcesMeta[i] = &pb.ResourceMeta{Id: int32(resource.ID), Description: resource.Description}
+		resourcesMeta[i] = &pb.ResourceMeta{Id: int32(resource.ID), Description: resource.Description, Type: string(resource.Type)}
 	}
 	return &pb.GetAllResourcesResponse{Resources: resourcesMeta}, nil
 }
