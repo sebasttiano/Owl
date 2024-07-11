@@ -25,9 +25,9 @@ type (
 	}
 
 	Resource struct {
-		ID          int          `db:"id"`
-		UserID      int          `db:"user_id"`
-		PieceUUID   string       `db:"piece_uuid"`
+		ID     int `db:"id"`
+		UserID int `db:"user_id"`
+		//PieceUUID   string       `db:"piece_uuid"`
 		Meta        string       `db:"meta"`
 		Type        ResourceType `db:"type"`
 		Description string

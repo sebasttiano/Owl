@@ -86,22 +86,22 @@ func (d *DBStorage) SetResource(ctx context.Context, res *models.Resource, piece
 	if err != nil {
 		return nil, err
 	}
-	// insert into pieces
-	sqlInsert := `INSERT INTO pieces (content, iv, salt) VALUES ($1, $2, $3) RETURNING id`
-
-	var uuid string
-	if err := d.conn.GetContext(ctx, &uuid, sqlInsert, piece.Content, piece.IV, piece.Salt); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
 
 	// insert into resources
-	sqlInsert = `INSERT INTO resources (piece_uuid, user_id, type, meta) VALUES ($1, $2, $3, $4) RETURNING id`
+	sqlInsert := `INSERT INTO resources (user_id, type, meta) VALUES ($1, $2, $3) RETURNING id`
 	var id int
-	if err := d.conn.GetContext(ctx, &id, sqlInsert, uuid, res.UserID, res.Type, res.Meta); err != nil {
+	if err := d.conn.GetContext(ctx, &id, sqlInsert, res.UserID, res.Type, res.Meta); err != nil {
 		tx.Rollback()
 		return nil, err
 	}
+
+	// insert into pieces
+	sqlInsert = `INSERT INTO pieces (content, iv, salt, resource_id) VALUES ($1, $2, $3, $4)`
+	if _, err := d.conn.ExecContext(ctx, sqlInsert, piece.Content, piece.IV, piece.Salt, id); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
 	tx.Commit()
 	res.ID = id
 	return res, nil
@@ -110,15 +110,15 @@ func (d *DBStorage) SetResource(ctx context.Context, res *models.Resource, piece
 func (d *DBStorage) GetResource(ctx context.Context, res *models.Resource) (*models.Resource, *models.Piece, error) {
 
 	// get resource
-	sqlSelect := `SELECT piece_uuid, type, meta FROM resources WHERE id = $1 AND user_id = $2`
+	sqlSelect := `SELECT type, meta FROM resources WHERE id = $1 AND user_id = $2`
 	if err := d.conn.GetContext(ctx, res, sqlSelect, res.ID, res.UserID); err != nil {
 		return nil, nil, err
 	}
 
 	// get piece
 	piece := &models.Piece{}
-	sqlSelect = `SELECT content, salt, iv FROM pieces WHERE id = $1`
-	if err := d.conn.GetContext(ctx, piece, sqlSelect, res.PieceUUID); err != nil {
+	sqlSelect = `SELECT content, salt, iv FROM pieces WHERE resource_id = $1`
+	if err := d.conn.GetContext(ctx, piece, sqlSelect, res.ID); err != nil {
 		return nil, nil, err
 	}
 	return res, piece, nil
