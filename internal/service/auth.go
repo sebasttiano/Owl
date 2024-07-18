@@ -34,7 +34,7 @@ func (a *AuthService) Register(ctx context.Context, name, password string) error
 		}
 		return ErrUserRegisrationFailed
 	}
-	logger.Log.Info(fmt.Sprintf("registered new user: %s", name))
+	logger.Log.Info("registered new user: " + name)
 	return nil
 }
 

@@ -24,5 +24,6 @@ func Initialize(level string) error {
 		return err
 	}
 	Log = zl
+
 	return nil
 }

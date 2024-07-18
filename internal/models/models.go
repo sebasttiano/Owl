@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
 )
@@ -25,9 +24,8 @@ type (
 	}
 
 	Resource struct {
-		ID     int `db:"id"`
-		UserID int `db:"user_id"`
-		//PieceUUID   string       `db:"piece_uuid"`
+		ID          int          `db:"id"`
+		UserID      int          `db:"user_id"`
 		Meta        string       `db:"meta"`
 		Type        ResourceType `db:"type"`
 		Description string
@@ -65,7 +63,7 @@ func (r *Resource) SetDescriptionFromMeta() {
 
 	var m Meta
 	if err := json.Unmarshal([]byte(r.Meta), &m); err != nil {
-		logger.Log.Error(fmt.Sprintf("failed to unmarshall meta: %s", r.Meta), zap.Error(err))
+		logger.Log.Error("failed to unmarshall meta: "+r.Meta, zap.Error(err))
 		return
 	}
 	r.Description = m.Description

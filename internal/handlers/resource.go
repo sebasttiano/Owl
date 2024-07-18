@@ -2,8 +2,12 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"github.com/sebasttiano/Owl/internal/models"
 	pb "github.com/sebasttiano/Owl/internal/proto"
+	"github.com/sebasttiano/Owl/internal/service"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -23,7 +27,7 @@ func (t *ResourceServer) SetResource(ctx context.Context, in *pb.SetResourceRequ
 
 	resp, err := t.Resource.SetResource(ctx, resource)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "internal grpc server error")
 	}
 	response := &pb.SetResourceResponse{Resource: &pb.ResourceMeta{Id: int32(resp.ID), Description: resp.Description}}
 	return response, nil
@@ -38,7 +42,10 @@ func (t *ResourceServer) GetResource(ctx context.Context, in *pb.GetResourceRequ
 	res := &models.Resource{ID: int(in.Id), UserID: userId}
 	resource, err := t.Resource.GetResource(ctx, res)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, service.ErrGetResourceNotFound) {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, status.Error(codes.Internal, "internal grpc server error")
 	}
 
 	req := pb.GetResourceResponse{Resource: &pb.ResourceMsg{Content: resource.Content, Description: resource.Description, Type: string(resource.Type)}}
@@ -54,7 +61,7 @@ func (t *ResourceServer) GetAllResources(ctx context.Context, _ *emptypb.Empty) 
 	}
 	resources, err := t.Resource.GetAllResources(ctx, userId)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "internal grpc server error")
 	}
 	resourcesMeta := make([]*pb.ResourceMeta, len(resources))
 	for i, resource := range resources {
@@ -71,7 +78,8 @@ func (t *ResourceServer) DeleteResource(ctx context.Context, in *pb.DeleteResour
 
 	res := &models.Resource{ID: int(in.Id), UserID: userId}
 	if err := t.Resource.DeleteResource(ctx, res); err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "internal grpc server error")
 	}
+
 	return nil, nil
 }

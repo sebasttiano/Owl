@@ -39,6 +39,7 @@ func NewServerConfig() (*ServerConfig, error) {
 	if err := cleanenv.ReadConfig("./config/server_cfg.yaml", &config); err != nil {
 		return nil, fmt.Errorf("cannot read server config: %s", err)
 	}
+
 	return &config, nil
 }
 
@@ -67,5 +68,6 @@ func NewClientConfig() (*ClientConfig, error) {
 	if err := cleanenv.ReadConfig("./config/client_cfg.yaml", &config); err != nil {
 		return nil, fmt.Errorf("cannot read cli config: %s", err)
 	}
+
 	return &config, nil
 }

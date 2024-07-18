@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,10 +13,11 @@ import (
 )
 
 var (
-	ErrSetResource     = errors.New("failed to save resource")
-	ErrGetResource     = errors.New("failed to get resource")
-	ErrGetAllResources = errors.New("failed to get all resources meta")
-	ErrDelResource     = errors.New("failed to delete resource")
+	ErrSetResource         = errors.New("failed to save resource")
+	ErrGetResource         = errors.New("failed to get resource")
+	ErrGetResourceNotFound = errors.New("not found requested resource")
+	ErrGetAllResources     = errors.New("failed to get all resources meta")
+	ErrDelResource         = errors.New("failed to delete resource")
 )
 
 func (t *ResourceService) SetResource(ctx context.Context, data models.Resource) (*models.Resource, error) {
@@ -52,6 +54,9 @@ func (t *ResourceService) GetResource(ctx context.Context, res *models.Resource)
 	res, piece, err := t.Repo.GetResource(ctx, res)
 	if err != nil {
 		logger.Log.Error("failed to get resource from repo", zap.Error(err))
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("%w: %v", ErrGetResourceNotFound, err)
+		}
 		return nil, fmt.Errorf("%w: %v", ErrGetResource, err)
 	}
 

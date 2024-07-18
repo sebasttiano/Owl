@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
@@ -73,7 +72,7 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
-		logger.Log.Info(fmt.Sprintf("--> unary interceptor: %s", info.FullMethod))
+		logger.Log.Info("--> unary interceptor: " + info.FullMethod)
 		newCtx, err := i.authorize(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
@@ -96,7 +95,6 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, ErrNoMetadata.Error())
 	}
-
 	values := md["authorization"]
 	if len(values) == 0 {
 		return nil, status.Errorf(codes.Unauthenticated, ErrNoAccessToken.Error())
@@ -105,7 +103,7 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 	accessToken := values[0]
 	claims, err := i.jwtManager.Verify(accessToken)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "%w: %v", ErrInvalidToken, err)
+		return nil, status.Errorf(codes.Unauthenticated, "%v: %v", ErrInvalidToken, err)
 	}
 
 	// Set user id to metadata
