@@ -27,7 +27,7 @@ var signBoard *SignBoard
 
 func (c *CLI) GetUserCreds(ctx context.Context) (string, string, error) {
 
-	signBoard = NewSignBoard(c)
+	signBoard = NewSignBoard(c, c.cfg.Info.Banner)
 	m, err := tea.NewProgram(
 		signBoard,
 		tea.WithAltScreen(),
@@ -56,9 +56,10 @@ type SignBoard struct {
 	width, height int
 	loaded        bool
 	cli           *CLI
+	banner        string
 }
 
-func NewSignBoard(c *CLI) *SignBoard {
+func NewSignBoard(c *CLI, banner string) *SignBoard {
 	help := help.New()
 	help.ShowAll = true
 	signList := list.New([]list.Item{
@@ -68,7 +69,7 @@ func NewSignBoard(c *CLI) *SignBoard {
 	signList.SetShowHelp(false)
 	signList.Title = "Do you have an account?"
 
-	return &SignBoard{help: help, list: signList}
+	return &SignBoard{help: help, list: signList, banner: banner}
 }
 
 func (s *SignBoard) Init() tea.Cmd {
@@ -112,7 +113,7 @@ func (s *SignBoard) View() string {
 	if !s.loaded {
 		return "LOADING!"
 	}
-	return form(s.width, s.height, "",
+	return form(s.width, s.height, s.banner,
 		lipgloss.JoinVertical(
 			lipgloss.Center,
 			s.list.View(),

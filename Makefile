@@ -24,7 +24,7 @@ test-cover: tests coverage ## Run local tests with coverage checking
 build: build-agent build-server  ## Build all components
 
 build-agent: ## Build agent component
-	go build -o ./cmd/cli/cli ./cmd/cli/
+	go build -o ./cmd/cli/cli -ldflags "-X main.buildVersion=$$(cat version)  -X 'main.buildDate=$$(date +'%Y/%m/%d %H:%M:%S')'" ./cmd/cli/
 
 build-server: ## Build server component
 	go build -o ./cmd/server/server ./cmd/server/

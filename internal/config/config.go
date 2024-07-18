@@ -60,6 +60,9 @@ type ClientConfig struct {
 	Auth struct {
 		RefreshPeriod int `yaml:"refresh_period" env:"REFRESH_PERIOD" env-default:"300"`
 	} `yaml:"auth"`
+	Info struct {
+		Banner string
+	}
 }
 
 func NewClientConfig() (*ClientConfig, error) {
