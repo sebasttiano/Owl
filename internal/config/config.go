@@ -23,6 +23,10 @@ type ServerConfig struct {
 	Logger struct {
 		Level string `yaml:"level" env:"LOG_LEVEL" env-default:"info"`
 	} `yaml:"log"`
+	Cert struct {
+		Cert string `yaml:"cert" env:"CERT_FILE"`
+		Key  string `yaml:"key" env:"CERT_KEY"`
+	}
 }
 
 func (s *ServerConfig) GetAddress() string {
@@ -53,9 +57,7 @@ type ClientConfig struct {
 		Port int    `yaml:"port" env:"API_PORT" env-default:"8081"`
 	} `yaml:"server"`
 	Cert struct {
-		CA   string `yaml:"ca" env:"CA_PATH" env-default:"cert/CertAuth.crt"`
-		Cert string `yaml:"cert" env:"CLIENT_CERT_PATH" env-default:"cert/cli.crt"`
-		Key  string `yaml:"key" env:"CLIENT_KEY_PATH" env-default:"cert/cli.key"`
+		CA string `yaml:"ca" env:"CA_PATH" env-default:"cert/ca-cert.pem"`
 	} `yaml:"cert"`
 	Auth struct {
 		RefreshPeriod int `yaml:"refresh_period" env:"REFRESH_PERIOD" env-default:"300"`

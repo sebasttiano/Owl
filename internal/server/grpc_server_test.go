@@ -15,9 +15,7 @@ var GServ *GRPSServer
 
 func init() {
 	conn := &sqlx.DB{}
-	//repo := repository.NewDBStorage(conn)
-	//srv := service.NewTextService(repo)
-	GServ = NewGRPSServer(conn, &GRPSServerSettings{})
+	GServ = NewGRPSServer(conn, &GRPSServerSettings{CertKey: "../../cert/server-key.pem", CertFile: "../../cert/server-cert.pem"})
 }
 
 func TestNewGRPSServer(t *testing.T) {
@@ -26,9 +24,8 @@ func TestNewGRPSServer(t *testing.T) {
 
 func TestGRPSServer_StartAndShutdown(t *testing.T) {
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-
 	wg := &sync.WaitGroup{}
 
 	wg.Add(1)

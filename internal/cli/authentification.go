@@ -11,7 +11,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 	"strings"
 	"time"
@@ -25,9 +25,9 @@ var (
 
 var signBoard *SignBoard
 
-func (c *CLI) GetUserCreds(ctx context.Context) (string, string, error) {
+func (c *CLI) GetUserCreds(ctx context.Context, tlsCreds credentials.TransportCredentials) (string, string, error) {
 
-	signBoard = NewSignBoard(c, c.cfg.Info.Banner)
+	signBoard = NewSignBoard(c, c.cfg.Info.Banner, tlsCreds)
 	m, err := tea.NewProgram(
 		signBoard,
 		tea.WithAltScreen(),
@@ -59,12 +59,12 @@ type SignBoard struct {
 	banner        string
 }
 
-func NewSignBoard(c *CLI, banner string) *SignBoard {
+func NewSignBoard(c *CLI, banner string, tlsCreds credentials.TransportCredentials) *SignBoard {
 	help := help.New()
 	help.ShowAll = true
 	signList := list.New([]list.Item{
 		newSignInModel("SIGN IN", ""),
-		newSignUpModel("SIGN UP", "", c),
+		newSignUpModel("SIGN UP", "", c, tlsCreds),
 	}, list.NewDefaultDelegate(), 0, 0)
 	signList.SetShowHelp(false)
 	signList.Title = "Do you have an account?"
@@ -121,14 +121,14 @@ func (s *SignBoard) View() string {
 }
 
 type signUpModel struct {
-	cli           *CLI
-	cancelled     bool
-	width, height int
-
+	cli            *CLI
+	cancelled      bool
+	width, height  int
 	username       textinput.Model
 	password       textinput.Model
 	repeatPassword textinput.Model
 	item           Item
+	tls            credentials.TransportCredentials
 }
 
 // Init implements tea.Model.
@@ -197,7 +197,7 @@ func (s signUpModel) makeRegistration() tea.Msg {
 
 	regConn, err := grpc.NewClient(
 		s.cli.cfg.GetServerAddress(),
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
+		grpc.WithTransportCredentials(s.tls))
 
 	if err != nil {
 		return NewErrorModel(err)
@@ -250,7 +250,7 @@ func (s signUpModel) Description() string {
 	return s.item.description
 }
 
-func newSignUpModel(title, description string, c *CLI) signUpModel {
+func newSignUpModel(title, description string, c *CLI, tlsCreds credentials.TransportCredentials) signUpModel {
 	m := signUpModel{
 		cancelled:      false,
 		username:       textinput.New(),
@@ -261,6 +261,7 @@ func newSignUpModel(title, description string, c *CLI) signUpModel {
 			description: description,
 		},
 		cli: c,
+		tls: tlsCreds,
 	}
 	m.username.CharLimit = 32
 	m.username.Prompt = "Username: "
@@ -345,7 +346,7 @@ func (s signInModel) View() string {
 	)
 }
 
-// implement the list.Item interface
+// FilterValue implement the list.Item interface
 func (s signInModel) FilterValue() string {
 	return s.item.title
 }

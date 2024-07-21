@@ -42,7 +42,13 @@ func Run() {
 
 	wg := &sync.WaitGroup{}
 
-	settings := &server.GRPSServerSettings{SecretKey: cfg.Server.Secret, TokenDuration: time.Duration(cfg.Server.TokenDuration) * time.Second}
+	settings := &server.GRPSServerSettings{
+		SecretKey:     cfg.Server.Secret,
+		TokenDuration: time.Duration(cfg.Server.TokenDuration) * time.Second,
+		CertFile:      cfg.Cert.Cert,
+		CertKey:       cfg.Cert.Key,
+	}
+
 	grpcSrv := server.NewGRPSServer(conn, settings)
 
 	wg.Add(1)

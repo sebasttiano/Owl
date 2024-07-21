@@ -1,14 +1,17 @@
 database:
-  username: "owl"
-  password: "sookoh7Eishe"
+  name:
+  username:
+  password:
   host: "localhost"
   port: 5432
-  name: "owl"
   sslmode: "disable"
 server:
-  host: "localhost"
+  host: 127.0.0.1
   port: 8081
-  secret: "Ieti6ahzi4xoh3ohqu0b"
+  secret:
   token_duration: 300
+cert:
+  cert: "cert/server-cert.pem"
+  key: "cert/server-key.pem"
 log:
   level: "info"

@@ -7,7 +7,7 @@ import (
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"os"
 	"time"
 )
 
@@ -38,9 +38,15 @@ func (c *CLI) Run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	name, pass, err := c.GetUserCreds(ctx)
+	tlsCredentials, err := loadTLSCredentials(c.cfg.Cert.CA)
+	if err != nil {
+		logger.Log.Fatal("cannot load TLS credentials: ", zap.Error(err))
+		os.Exit(1)
+	}
 
-	authConn, err := grpc.NewClient(c.cfg.GetServerAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	name, pass, err := c.GetUserCreds(ctx, tlsCredentials)
+	authConn, err := grpc.NewClient(c.cfg.GetServerAddress(), grpc.WithTransportCredentials(tlsCredentials))
+
 	if err != nil {
 		logger.Log.Error("failed to create auth connection", zap.Error(err))
 		return ErrInitAuthConn
@@ -57,7 +63,7 @@ func (c *CLI) Run() error {
 
 	conn, err := grpc.NewClient(
 		c.cfg.GetServerAddress(),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(tlsCredentials),
 		grpc.WithUnaryInterceptor(authInterceptor.Unary()))
 
 	if err != nil {

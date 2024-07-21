@@ -24,3 +24,10 @@ vendor/
 
 
 cover.txt
+# TLS files
+*.pem
+*.srl
+
+# Config files
+config/client_cfg.yaml
+config/server_cfg.yaml

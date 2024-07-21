@@ -1,11 +1,14 @@
 
 # HELP
-.PHONY: help tests test
+.PHONY: help tests test cert
 
 help: ## This help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
+
+cert: ## generate TLC certs
+	cd cert; ./gen.sh; cd ..
 
 tests: ## Run local tests
 	go test -v -coverprofile=cover.txt `go list ./... | egrep -v 'proto|mock'`

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/jmoiron/sqlx"
 	"github.com/sebasttiano/Owl/internal/repository"
@@ -19,6 +20,8 @@ import (
 
 type GRPSServerSettings struct {
 	SecretKey     string
+	CertFile      string
+	CertKey       string
 	TokenDuration time.Duration
 }
 
@@ -32,7 +35,15 @@ func NewGRPSServer(conn *sqlx.DB, settings *GRPSServerSettings) *GRPSServer {
 	repo := repository.NewDBStorage(conn)
 	j := handlers.NewJWTManager(settings.SecretKey, settings.TokenDuration)
 	authInterceptor := handlers.NewAuthInterceptor(j)
+
+	tlsCredentials, err := loadTLSCredentials(settings.CertFile, settings.CertKey)
+	if err != nil {
+		fmt.Println(err)
+		logger.Log.Fatal("cannot load TLS credentials", zap.Error(err))
+	}
+
 	s := grpc.NewServer(
+		grpc.Creds(tlsCredentials),
 		grpc.ChainUnaryInterceptor(
 			logging.UnaryServerInterceptor(handlers.InterceptorLogger(logger.Log)),
 			authInterceptor.Unary(),
