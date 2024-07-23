@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/jackc/pgerrcode"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"github.com/sebasttiano/Owl/internal/models"

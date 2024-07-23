@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/sebasttiano/Owl/internal/logger"
 	pb "github.com/sebasttiano/Owl/internal/proto"
@@ -12,8 +15,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"strconv"
-	"time"
 )
 
 var (

@@ -3,17 +3,18 @@ package application
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/sebasttiano/Owl/internal/config"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"github.com/sebasttiano/Owl/internal/server"
 	"go.uber.org/zap"
-	"os"
-	"os/signal"
-	"sync"
-	"syscall"
-	"time"
 )
 
 func Run() {

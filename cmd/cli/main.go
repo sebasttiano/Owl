@@ -4,11 +4,12 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
+	"text/template"
+
 	"github.com/sebasttiano/Owl/internal/cli"
 	"github.com/sebasttiano/Owl/internal/config"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
-	"text/template"
 )
 
 var buildVersion = "N/A"

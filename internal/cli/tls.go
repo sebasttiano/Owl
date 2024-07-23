@@ -4,9 +4,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"os"
+
 	"github.com/sebasttiano/Owl/internal/logger"
 	"google.golang.org/grpc/credentials"
-	"os"
 )
 
 func loadTLSCredentials(caCert string) (credentials.TransportCredentials, error) {

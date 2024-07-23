@@ -3,12 +3,13 @@ package cli
 import (
 	"context"
 	"errors"
+	"os"
+	"time"
+
 	"github.com/sebasttiano/Owl/internal/config"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"os"
-	"time"
 )
 
 var (

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/sebasttiano/Owl/internal/encrypted"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"github.com/sebasttiano/Owl/internal/models"

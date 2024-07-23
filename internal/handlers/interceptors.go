@@ -3,6 +3,8 @@ package handlers
 import (
 	"context"
 	"errors"
+	"strconv"
+
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
@@ -10,7 +12,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"strconv"
 )
 
 var ErrNoMetadata = errors.New("metadata is not provided")

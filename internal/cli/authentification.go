@@ -3,6 +3,9 @@ package cli
 import (
 	"context"
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
@@ -13,8 +16,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
-	"strings"
-	"time"
 )
 
 var (
@@ -117,7 +118,7 @@ func (s *SignBoard) View() string {
 		lipgloss.JoinVertical(
 			lipgloss.Center,
 			s.list.View(),
-			s.help.View(keys)))
+			s.help.View(&keys)))
 }
 
 type signUpModel struct {
@@ -181,7 +182,7 @@ func (s signUpModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			s.cancelled = true
 			return s, tea.Quit
 		}
-	case ErrorModel:
+	case ModelError:
 		return msg.Update(nil)
 	case *SignBoard:
 		msg.width = s.width

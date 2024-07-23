@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"context"
+	"net"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	mockservice "github.com/sebasttiano/Owl/internal/handlers/mocks"
 	"github.com/sebasttiano/Owl/internal/models"
@@ -15,8 +18,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"net"
-	"testing"
 )
 
 const bufSize = 1024 * 1024

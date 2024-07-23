@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+
 	"github.com/sebasttiano/Owl/internal/models"
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"github.com/sebasttiano/Owl/internal/service"
@@ -13,13 +14,13 @@ import (
 
 func (t *ResourceServer) SetResource(ctx context.Context, in *pb.SetResourceRequest) (*pb.SetResourceResponse, error) {
 
-	userId, err := getUserIDFromContext(ctx)
+	userID, err := getUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	resource := models.Resource{
-		UserID:      userId,
+		UserID:      userID,
 		Type:        models.ResourceType(in.Resource.Type),
 		Description: in.Resource.Description,
 		Content:     in.Resource.Content,
@@ -35,11 +36,11 @@ func (t *ResourceServer) SetResource(ctx context.Context, in *pb.SetResourceRequ
 
 func (t *ResourceServer) GetResource(ctx context.Context, in *pb.GetResourceRequest) (*pb.GetResourceResponse, error) {
 
-	userId, err := getUserIDFromContext(ctx)
+	userID, err := getUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	res := &models.Resource{ID: int(in.Id), UserID: userId}
+	res := &models.Resource{ID: int(in.Id), UserID: userID}
 	resource, err := t.Resource.GetResource(ctx, res)
 	if err != nil {
 		if errors.Is(err, service.ErrGetResourceNotFound) {
@@ -55,11 +56,11 @@ func (t *ResourceServer) GetResource(ctx context.Context, in *pb.GetResourceRequ
 
 func (t *ResourceServer) GetAllResources(ctx context.Context, _ *emptypb.Empty) (*pb.GetAllResourcesResponse, error) {
 
-	userId, err := getUserIDFromContext(ctx)
+	userID, err := getUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	resources, err := t.Resource.GetAllResources(ctx, userId)
+	resources, err := t.Resource.GetAllResources(ctx, userID)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "internal grpc server error")
 	}
@@ -71,12 +72,12 @@ func (t *ResourceServer) GetAllResources(ctx context.Context, _ *emptypb.Empty) 
 }
 
 func (t *ResourceServer) DeleteResource(ctx context.Context, in *pb.DeleteResourceRequest) (*emptypb.Empty, error) {
-	userId, err := getUserIDFromContext(ctx)
+	userID, err := getUserIDFromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	res := &models.Resource{ID: int(in.Id), UserID: userId}
+	res := &models.Resource{ID: int(in.Id), UserID: userID}
 	if err := t.Resource.DeleteResource(ctx, res); err != nil {
 		return nil, status.Error(codes.Internal, "internal grpc server error")
 	}

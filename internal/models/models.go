@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
 )

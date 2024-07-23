@@ -7,10 +7,11 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"io"
+
 	"github.com/sebasttiano/Owl/internal/logger"
 	"github.com/sebasttiano/Owl/internal/models"
 	"go.uber.org/zap"
-	"io"
 
 	"golang.org/x/crypto/pbkdf2"
 )

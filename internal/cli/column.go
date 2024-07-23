@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -54,7 +55,7 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		c.setSize(msg.Width, msg.Height)
+		c.setSize(msg.Width)
 		c.list.SetSize(msg.Width/margin, msg.Height/2)
 	case tea.KeyMsg:
 		switch {
@@ -107,7 +108,7 @@ func (c *column) Set(i int, r ResourceItem) tea.Cmd {
 	return c.list.InsertItem(APPEND, r)
 }
 
-func (c *column) setSize(width, height int) {
+func (c *column) setSize(width int) {
 	c.width = width / margin
 }
 

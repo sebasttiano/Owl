@@ -1,28 +1,29 @@
 package cli
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
 	"time"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
-type ErrorModel struct {
+type ModelError struct {
 	width, height int
 	err           error
 }
 
-func NewErrorModel(err error) ErrorModel {
-	return ErrorModel{err: err}
+func NewErrorModel(err error) ModelError {
+	return ModelError{err: err}
 }
 
-func (e ErrorModel) Error() string {
+func (e ModelError) Error() string {
 	return e.err.Error()
 }
 
-func (e ErrorModel) Init() tea.Cmd {
+func (e ModelError) Init() tea.Cmd {
 	return nil
 }
 
-func (e ErrorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (e ModelError) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		e.height = msg.Height
@@ -34,6 +35,6 @@ func (e ErrorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return e, nil
 }
 
-func (e ErrorModel) View() string {
+func (e ModelError) View() string {
 	return form(e.width, e.height, "Error occured!", e.Error())
 }

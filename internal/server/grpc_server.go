@@ -3,12 +3,13 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	"github.com/jmoiron/sqlx"
-	"github.com/sebasttiano/Owl/internal/repository"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	"github.com/jmoiron/sqlx"
+	"github.com/sebasttiano/Owl/internal/repository"
 
 	"github.com/sebasttiano/Owl/internal/handlers"
 	"github.com/sebasttiano/Owl/internal/logger"

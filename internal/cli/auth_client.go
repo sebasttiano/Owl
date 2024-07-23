@@ -2,12 +2,13 @@ package cli
 
 import (
 	"context"
+	"time"
+
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"github.com/sebasttiano/Owl/internal/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 type AuthClient struct {

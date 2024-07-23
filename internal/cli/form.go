@@ -7,6 +7,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
+	"text/template"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
@@ -16,9 +20,6 @@ import (
 	"github.com/sebasttiano/Owl/internal/models"
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"google.golang.org/grpc/status"
-	"strconv"
-	"strings"
-	"text/template"
 )
 
 var (
@@ -51,7 +52,6 @@ func form(width, height int, title, content string) string {
 type textForm struct {
 	ctx           context.Context
 	width, height int
-	index         int
 	description   textinput.Model
 	content       textarea.Model
 	cancelled     bool
@@ -138,7 +138,7 @@ func (f *textForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case *textForm:
 		return mainBoard.Update(f)
-	case ErrorModel:
+	case ModelError:
 		return mainBoard.Update(msg)
 	}
 
@@ -190,7 +190,6 @@ func (f *textForm) createResource() ResourceItem {
 type outputForm struct {
 	ctx           context.Context
 	width, height int
-	index         int
 	cancelled     bool
 	cli           *CLI
 	help          help.Model
@@ -427,7 +426,7 @@ func (c *cardForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case *cardForm:
 		return mainBoard.Update(c)
-	case ErrorModel:
+	case ModelError:
 		return mainBoard.Update(msg)
 	}
 	return c, tea.Batch(cnnCmd, expCmd, cvvCmd, holderCmd, descriptionCmd)
@@ -437,7 +436,7 @@ func (c *cardForm) saveCardToServer(card *models.CardCreds) tea.Cmd {
 	return func() tea.Msg {
 		content, err := json.Marshal(card)
 		if err != nil {
-			tea.Quit()
+			return NewErrorModel(err)
 		}
 		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: string(content), Description: card.Description, Type: string(models.Card)}}
 		resp, err := c.cli.Client.Resource.SetResource(c.ctx, &request)
@@ -586,7 +585,7 @@ func (c *credForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case *credForm:
 		return mainBoard.Update(c)
-	case ErrorModel:
+	case ModelError:
 		return mainBoard.Update(msg)
 	}
 	return c, tea.Batch(descriptionCmd, usernameCmd, passwordCmd)
@@ -620,7 +619,7 @@ func (c *credForm) saveCredToServer(creds *models.Creds) tea.Cmd {
 	return func() tea.Msg {
 		content, err := json.Marshal(creds)
 		if err != nil {
-			tea.Quit()
+			return NewErrorModel(err)
 		}
 		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: string(content), Description: creds.Description, Type: string(models.Password)}}
 		resp, err := c.cli.Client.Resource.SetResource(c.ctx, &request)

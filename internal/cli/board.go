@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"errors"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
@@ -169,7 +170,7 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case *credForm:
 		m.cols[credType].Set(APPEND, msg.createResource())
 		return m, nil
-	case ErrorModel:
+	case ModelError:
 		return msg.Update(nil)
 	}
 
@@ -195,5 +196,5 @@ func (m *MainBoard) View() string {
 		m.cols[cardType].View(),
 		m.cols[textType].View(),
 	)
-	return lipgloss.JoinVertical(lipgloss.Left, board, m.help.View(keys), m.help.ShortHelpView([]key.Binding{keys.New, keys.Enter, keys.Delete}))
+	return lipgloss.JoinVertical(lipgloss.Left, board, m.help.View(&keys), m.help.ShortHelpView([]key.Binding{keys.New, keys.Enter, keys.Delete}))
 }

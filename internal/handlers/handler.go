@@ -3,6 +3,8 @@ package handlers
 import (
 	"context"
 	"errors"
+	"strconv"
+
 	"github.com/sebasttiano/Owl/internal/logger"
 	"github.com/sebasttiano/Owl/internal/models"
 	pb "github.com/sebasttiano/Owl/internal/proto"
@@ -10,7 +12,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"strconv"
 )
 
 //go:generate mockgen -source=handler.go -destination=mocks/mock.go
@@ -26,12 +27,12 @@ var getUserIDFromContext = func(ctx context.Context) (int, error) {
 		logger.Log.Error("failed get user id from context")
 		return 0, status.Errorf(codes.Internal, ErrInternalGrpc.Error())
 	}
-	userId, err := strconv.Atoi(md.Get("user-id")[0])
+	userID, err := strconv.Atoi(md.Get("user-id")[0])
 	if err != nil {
 		logger.Log.Error("failed to convert user id to integer", zap.Error(err))
 		return 0, status.Errorf(codes.Internal, ErrInternalGrpc.Error())
 	}
-	return userId, nil
+	return userID, nil
 }
 
 type AuthServer struct {

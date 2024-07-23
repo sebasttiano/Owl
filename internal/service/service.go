@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/sebasttiano/Owl/internal/encrypted"
 	"github.com/sebasttiano/Owl/internal/models"
