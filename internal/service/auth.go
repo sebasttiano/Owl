@@ -56,19 +56,6 @@ func (a *AuthService) Login(ctx context.Context, name, password string) (int, er
 	return user.ID, nil
 }
 
-func (a *AuthService) Find(ctx context.Context, uid int) (bool, error) {
-	var user models.User
-	user.ID = uid
-	err := a.Repo.GetUserByID(ctx, &user)
-	if err != nil {
-		if errors.Is(err, repository.ErrDBNoRows) {
-			return false, ErrUserNotFound
-		}
-		return false, err
-	}
-	return true, nil
-}
-
 func (a *AuthService) hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err

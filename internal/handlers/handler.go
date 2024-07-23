@@ -54,7 +54,6 @@ type ResourceServer struct {
 type Authenticator interface {
 	Register(ctx context.Context, name, password string) error
 	Login(ctx context.Context, name, password string) (int, error)
-	Find(ctx context.Context, uid int) (bool, error)
 }
 
 type BinaryServ interface {

@@ -35,21 +35,6 @@ func (m *MockAuthenticator) EXPECT() *MockAuthenticatorMockRecorder {
 	return m.recorder
 }
 
-// Find mocks base method.
-func (m *MockAuthenticator) Find(ctx context.Context, uid int) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", ctx, uid)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Find indicates an expected call of Find.
-func (mr *MockAuthenticatorMockRecorder) Find(ctx, uid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockAuthenticator)(nil).Find), ctx, uid)
-}
-
 // Login mocks base method.
 func (m *MockAuthenticator) Login(ctx context.Context, name, password string) (int, error) {
 	m.ctrl.T.Helper()

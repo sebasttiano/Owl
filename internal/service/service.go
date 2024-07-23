@@ -13,7 +13,6 @@ var pgError *pgconn.PgError
 
 type AuthRepo interface {
 	GetUser(ctx context.Context, user *models.User) error
-	GetUserByID(ctx context.Context, user *models.User) error
 	AddUser(ctx context.Context, user *models.User) error
 }
 
