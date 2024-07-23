@@ -90,13 +90,13 @@ func (a *AuthServer) Register(ctx context.Context, in *pb.RegisterRequest) (*emp
 	if err := a.Auth.Register(ctx, in.GetName(), in.GetPassword()); err != nil {
 		logger.Log.Error("user register failed", zap.Error(err))
 		if errors.Is(err, service.ErrUserAlreadyExist) {
-			return nil, status.Errorf(codes.AlreadyExists, err.Error())
+			return nil, status.Error(codes.AlreadyExists, err.Error())
 		}
 		if errors.Is(err, service.ErrUserPasswordSave) {
-			return nil, status.Errorf(codes.InvalidArgument, err.Error())
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		if errors.Is(err, service.ErrUserRegisrationFailed) {
-			return nil, status.Errorf(codes.Internal, err.Error())
+			return nil, status.Error(codes.Internal, err.Error())
 		}
 	}
 	return nil, nil
@@ -112,15 +112,15 @@ func (a *AuthServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 			return nil, status.Errorf(codes.NotFound, `user with name %s not found`, in.GetName())
 		}
 		if errors.Is(err, service.ErrWrongPassword) {
-			return nil, status.Errorf(codes.Aborted, err.Error())
+			return nil, status.Error(codes.Aborted, err.Error())
 		}
-		return nil, status.Errorf(codes.Internal, `login failed`)
+		return nil, status.Error(codes.Internal, `login failed`)
 	}
 
 	token, err := a.JManager.BuildJWTString(id)
 	if err != nil {
 		logger.Log.Error("token creation failed", zap.Error(err))
-		return nil, status.Errorf(codes.Internal, "token creation failed")
+		return nil, status.Error(codes.Internal, "token creation failed")
 	}
 
 	response.Token = token
