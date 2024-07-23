@@ -2,19 +2,18 @@ package cli
 
 import (
 	"context"
-
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"google.golang.org/grpc/status"
+	"time"
 )
 
 const APPEND = -1
 
 type column struct {
-	ctx     context.Context
 	focus   bool
 	resType resType
 	list    list.Model
@@ -35,14 +34,14 @@ func (c *column) Focused() bool {
 	return c.focus
 }
 
-func newColumn(ctx context.Context, resType resType, cli *CLI) column {
+func newColumn(resType resType, cli *CLI) column {
 	var focus bool
 	if resType == credType {
 		focus = true
 	}
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
 	defaultList.SetShowHelp(false)
-	return column{ctx: ctx, cli: cli, focus: focus, resType: resType, list: defaultList}
+	return column{cli: cli, focus: focus, resType: resType, list: defaultList}
 }
 
 // Init does initial setup for the column.
@@ -60,12 +59,12 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.New):
-			t := newModel(c.ctx, c.cli, c.resType)
+			t := newModel(c.cli, c.resType)
 			return t.Update(nil)
 		case key.Matches(msg, keys.Enter):
 			if len(c.list.VisibleItems()) != 0 {
 				item := c.list.SelectedItem().(ResourceItem)
-				o := newOutputModel(c.ctx, c.cli, &c, item.resID)
+				o := newOutputModel(c.cli, &c, item.resID)
 				mod := o.getContent()
 				if mod != nil {
 					return mod, nil
@@ -85,10 +84,14 @@ func (c column) View() string {
 }
 
 func (c *column) DeleteCurrent() tea.Cmd {
+
 	if len(c.list.VisibleItems()) > 0 {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
 		item := c.list.SelectedItem().(ResourceItem)
 		request := &pb.DeleteResourceRequest{Id: int32(item.resID)}
-		_, err := c.cli.Client.Resource.DeleteResource(c.ctx, request)
+		_, err := c.cli.Client.Resource.DeleteResource(ctx, request)
 		if err != nil {
 			if _, ok := status.FromError(err); ok {
 				return tea.Quit

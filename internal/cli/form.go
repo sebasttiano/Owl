@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -50,7 +51,6 @@ func form(width, height int, title, content string) string {
 }
 
 type textForm struct {
-	ctx           context.Context
 	width, height int
 	description   textinput.Model
 	content       textarea.Model
@@ -60,22 +60,21 @@ type textForm struct {
 	resID         int
 }
 
-func newModel(ctx context.Context, cli *CLI, resType resType) tea.Model {
+func newModel(cli *CLI, resType resType) tea.Model {
 	switch resType {
 	case 2:
-		return newTextModel(ctx, cli)
+		return newTextModel(cli)
 	case 1:
-		return newCardModel(ctx, cli)
+		return newCardModel(cli)
 	case 0:
-		return newCredModel(ctx, cli)
+		return newCredModel(cli)
 	}
 
 	return nil
 }
 
-func newTextModel(ctx context.Context, cli *CLI) *textForm {
+func newTextModel(cli *CLI) *textForm {
 	m := textForm{
-		ctx:         ctx,
 		cli:         cli,
 		description: textinput.New(),
 		content:     textarea.New(),
@@ -147,8 +146,10 @@ func (f *textForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (f *textForm) saveTextToServer(description, content string) tea.Cmd {
 	return func() tea.Msg {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
 		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: content, Description: description, Type: string(models.Text)}}
-		resp, err := f.cli.Client.Resource.SetResource(f.ctx, &request)
+		resp, err := f.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
 				return NewErrorModel(e.Err())
@@ -188,7 +189,6 @@ func (f *textForm) createResource() ResourceItem {
 }
 
 type outputForm struct {
-	ctx           context.Context
 	width, height int
 	cancelled     bool
 	cli           *CLI
@@ -199,10 +199,9 @@ type outputForm struct {
 	title         string
 }
 
-func newOutputModel(ctx context.Context, cli *CLI, col *column, id int) *outputForm {
+func newOutputModel(cli *CLI, col *column, id int) *outputForm {
 	o := &outputForm{
 		col:   col,
-		ctx:   ctx,
 		cli:   cli,
 		resID: id,
 	}
@@ -232,9 +231,11 @@ func (o *outputForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (o *outputForm) getContent() tea.Model {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	request := &pb.GetResourceRequest{Id: int32(o.resID)}
-	resp, _ := o.cli.Client.Resource.GetResource(o.ctx, request)
+	resp, _ := o.cli.Client.Resource.GetResource(ctx, request)
 	res := resp.Resource
 	switch res.GetType() {
 	case string(models.Text):
@@ -282,7 +283,6 @@ func (o *outputForm) View() string {
 }
 
 type cardForm struct {
-	ctx           context.Context
 	width, height int
 	description   textinput.Model
 	ccn           textinput.Model
@@ -295,9 +295,8 @@ type cardForm struct {
 	resID         int
 }
 
-func newCardModel(ctx context.Context, cli *CLI) *cardForm {
+func newCardModel(cli *CLI) *cardForm {
 	m := cardForm{
-		ctx:         ctx,
 		cli:         cli,
 		description: textinput.New(),
 		ccn:         textinput.New(),
@@ -438,8 +437,10 @@ func (c *cardForm) saveCardToServer(card *models.CardCreds) tea.Cmd {
 		if err != nil {
 			return NewErrorModel(err)
 		}
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
 		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: string(content), Description: card.Description, Type: string(models.Card)}}
-		resp, err := c.cli.Client.Resource.SetResource(c.ctx, &request)
+		resp, err := c.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
 				return NewErrorModel(e.Err())
@@ -495,7 +496,6 @@ func (c *cardForm) createResource() ResourceItem {
 }
 
 type credForm struct {
-	ctx           context.Context
 	width, height int
 	description   textinput.Model
 	username      textinput.Model
@@ -506,9 +506,8 @@ type credForm struct {
 	resID         int
 }
 
-func newCredModel(ctx context.Context, cli *CLI) *credForm {
+func newCredModel(cli *CLI) *credForm {
 	m := credForm{
-		ctx:         ctx,
 		cli:         cli,
 		description: textinput.New(),
 		username:    textinput.New(),
@@ -621,8 +620,11 @@ func (c *credForm) saveCredToServer(creds *models.Creds) tea.Cmd {
 		if err != nil {
 			return NewErrorModel(err)
 		}
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
 		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: string(content), Description: creds.Description, Type: string(models.Password)}}
-		resp, err := c.cli.Client.Resource.SetResource(c.ctx, &request)
+		resp, err := c.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
 				return NewErrorModel(e.Err())

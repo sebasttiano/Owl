@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -42,7 +43,7 @@ const margin = 4
 
 func (c *CLI) StartMainBoard(ctx context.Context) error {
 
-	mainBoard = NewMainBoard(ctx, c)
+	mainBoard = NewMainBoard(c)
 	if err := mainBoard.initLists(); err != nil {
 		logger.Log.Error("failed to init board columns", zap.Error(err))
 		return ErrInitMainBoard
@@ -66,7 +67,6 @@ const (
 )
 
 type MainBoard struct {
-	ctx       context.Context
 	help      help.Model
 	cols      []column
 	loaded    bool
@@ -80,9 +80,9 @@ func (m *MainBoard) initLists() error {
 
 	// Init cred, card, text types
 	m.cols = []column{
-		newColumn(m.ctx, credType, m.cli),
-		newColumn(m.ctx, cardType, m.cli),
-		newColumn(m.ctx, textType, m.cli),
+		newColumn(credType, m.cli),
+		newColumn(cardType, m.cli),
+		newColumn(textType, m.cli),
 	}
 
 	m.cols[credType].list.Title = "Credentials"
@@ -92,12 +92,12 @@ func (m *MainBoard) initLists() error {
 	return nil
 }
 
-func NewMainBoard(ctx context.Context, cli *CLI) *MainBoard {
+func NewMainBoard(cli *CLI) *MainBoard {
 	help := help.New()
 	help.ShowAll = true
 	defaultList := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
 	defaultList.SetShowHelp(false)
-	return &MainBoard{ctx: ctx, help: help, list: defaultList, cli: cli}
+	return &MainBoard{help: help, list: defaultList, cli: cli}
 }
 
 func (m *MainBoard) Init() tea.Cmd {
@@ -106,7 +106,10 @@ func (m *MainBoard) Init() tea.Cmd {
 
 func (m *MainBoard) updateColumns() error {
 
-	resp, err := m.cli.Client.Resource.GetAllResources(m.ctx, &emptypb.Empty{})
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	resp, err := m.cli.Client.Resource.GetAllResources(ctx, &emptypb.Empty{})
 	if err != nil {
 		return err
 	}

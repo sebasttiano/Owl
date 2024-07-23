@@ -3,7 +3,6 @@ package cli
 import (
 	"context"
 	"errors"
-	"os"
 	"time"
 
 	"github.com/sebasttiano/Owl/internal/config"
@@ -18,11 +17,6 @@ var (
 	ErrInitCLIConn         = errors.New("failed to create cli connection")
 	ErrInitGRPSClient      = errors.New("failed to create grpc client")
 )
-
-type templateInfoEntry struct {
-	Version string
-	Date    string
-}
 
 type CLI struct {
 	Auth   *AuthClient
@@ -42,7 +36,6 @@ func (c *CLI) Run() error {
 	tlsCredentials, err := loadTLSCredentials(c.cfg.Cert.CA)
 	if err != nil {
 		logger.Log.Fatal("cannot load TLS credentials: ", zap.Error(err))
-		os.Exit(1)
 	}
 
 	name, pass, err := c.GetUserCreds(ctx, tlsCredentials)
