@@ -39,8 +39,16 @@ func (c *CLI) Run() error {
 	}
 
 	name, pass, err := c.GetUserCreds(ctx, tlsCredentials)
-	authConn, err := grpc.NewClient(c.cfg.GetServerAddress(), grpc.WithTransportCredentials(tlsCredentials))
+	if err != nil {
+		if errors.Is(err, ErrCanceledByUser) {
+			logger.Log.Info(ErrCanceledByUser.Error())
+			return nil
+		}
+		logger.Log.Error("failed to get user creds", zap.Error(err))
+		return err
+	}
 
+	authConn, err := grpc.NewClient(c.cfg.GetServerAddress(), grpc.WithTransportCredentials(tlsCredentials))
 	if err != nil {
 		logger.Log.Error("failed to create auth connection", zap.Error(err))
 		return ErrInitAuthConn

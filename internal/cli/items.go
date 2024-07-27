@@ -5,18 +5,6 @@ type Item struct {
 	description string
 }
 
-func NewItem(title, description string) Item {
-	return Item{title: title, description: description}
-}
-
-//func (t *Item) Next() {
-//	if t.status == done {
-//		t.status = todo
-//	} else {
-//		t.status++
-//	}
-//}
-
 // implement the list.Item interface
 func (t Item) FilterValue() string {
 	return t.title

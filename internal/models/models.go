@@ -46,7 +46,7 @@ type (
 	}
 
 	CardCreds struct {
-		Description string
+		Description string `json:"description"`
 		CCN         string `json:"ccn"`
 		EXP         string `json:"exp"`
 		CVV         string `json:"cvv"`

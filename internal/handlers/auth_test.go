@@ -3,6 +3,9 @@ package handlers
 import (
 	"context"
 	"errors"
+	"net"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	mockservice "github.com/sebasttiano/Owl/internal/handlers/mocks"
 	pb "github.com/sebasttiano/Owl/internal/proto"
@@ -14,8 +17,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
-	"net"
-	"testing"
 )
 
 func TestAuthServer_Login(t *testing.T) {

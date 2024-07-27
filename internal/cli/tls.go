@@ -3,7 +3,7 @@ package cli
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
+	"errors"
 	"os"
 
 	"github.com/sebasttiano/Owl/internal/logger"
@@ -21,7 +21,7 @@ func loadTLSCredentials(caCert string) (credentials.TransportCredentials, error)
 	certPool := x509.NewCertPool()
 	if !certPool.AppendCertsFromPEM(pemServerCA) {
 		logger.Log.Error("failed to add server CA's certificate")
-		return nil, fmt.Errorf("failed to add server CA's certificate")
+		return nil, errors.New("failed to add server CA's certificate")
 	}
 
 	// Create the credentials and return it

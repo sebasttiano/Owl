@@ -23,6 +23,18 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	noteCharLimit        = 1024
+	noteMaxWidth         = 64
+	descriptionCharLimit = 32
+	ccnCharLimit         = 19
+	expCharLimit         = 5
+	cvvCharLimit         = 3
+	holderCharLimit      = 64
+	usernameCharLimit    = 32
+	passwordCharLimit    = 32
+)
+
 var (
 	ErrRenderTemplate = errors.New("error to render info template")
 	ErrOutputType     = errors.New("unknown resource type")
@@ -80,11 +92,11 @@ func newTextModel(cli *CLI) *textForm {
 		content:     textarea.New(),
 		help:        help.New(),
 	}
-	m.description.CharLimit = 32
+	m.description.CharLimit = descriptionCharLimit
 	m.description.Placeholder = "type your description"
 	m.content.ShowLineNumbers = false
-	m.content.MaxWidth = 64
-	m.content.CharLimit = 1024
+	m.content.MaxWidth = noteMaxWidth
+	m.content.CharLimit = noteCharLimit
 	m.content.Placeholder = "type your note..."
 	m.content.SetHeight(12)
 	m.content.SetWidth(64)
@@ -152,7 +164,7 @@ func (f *textForm) saveTextToServer(description, content string) tea.Cmd {
 		resp, err := f.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
-				return NewErrorModel(e.Err())
+				return NewModelError(e.Err())
 			}
 		}
 
@@ -235,7 +247,10 @@ func (o *outputForm) getContent() tea.Model {
 	defer cancel()
 
 	request := &pb.GetResourceRequest{Id: int32(o.resID)}
-	resp, _ := o.cli.Client.Resource.GetResource(ctx, request)
+	resp, err := o.cli.Client.Resource.GetResource(ctx, request)
+	if err != nil {
+		return NewModelError(err)
+	}
 	res := resp.Resource
 	switch res.GetType() {
 	case string(models.Text):
@@ -243,36 +258,36 @@ func (o *outputForm) getContent() tea.Model {
 	case string(models.Card):
 		var card models.CardCreds
 		if err := json.Unmarshal([]byte(res.GetContent()), &card); err != nil {
-			return NewErrorModel(err)
+			return NewModelError(err)
 		}
 
 		tmpl, err := template.New("card").Parse(cardInfo)
 		if err != nil {
-			return NewErrorModel(ErrRenderTemplate)
+			return NewModelError(ErrRenderTemplate)
 		}
 		buf := new(bytes.Buffer)
 		if err := tmpl.Execute(buf, card); err != nil {
-			return NewErrorModel(ErrRenderTemplate)
+			return NewModelError(ErrRenderTemplate)
 		}
 		o.content = buf.String()
 
 	case string(models.Password):
 		var creds models.Creds
 		if err := json.Unmarshal([]byte(res.GetContent()), &creds); err != nil {
-			return NewErrorModel(err)
+			return NewModelError(err)
 		}
 
 		tmpl, err := template.New("creds").Parse(passInfo)
 		if err != nil {
-			return NewErrorModel(ErrRenderTemplate)
+			return NewModelError(ErrRenderTemplate)
 		}
 		buf := new(bytes.Buffer)
 		if err := tmpl.Execute(buf, creds); err != nil {
-			return NewErrorModel(ErrRenderTemplate)
+			return NewModelError(ErrRenderTemplate)
 		}
 		o.content = buf.String()
 	default:
-		return NewErrorModel(ErrOutputType)
+		return NewModelError(ErrOutputType)
 	}
 	o.title = resp.Resource.GetDescription()
 	return nil
@@ -305,18 +320,18 @@ func newCardModel(cli *CLI) *cardForm {
 		holder:      textinput.New(),
 		help:        help.New(),
 	}
-	m.description.CharLimit = 32
+	m.description.CharLimit = descriptionCharLimit
 	m.description.Placeholder = "type your description"
 
-	m.ccn.CharLimit = 16 + 3
+	m.ccn.CharLimit = ccnCharLimit
 	m.ccn.Placeholder = "4505 **** **** 1234"
 	m.ccn.Prompt = ""
 	m.ccn.Validate = func(s string) error {
 		if len(s) == 0 || len(s)%5 != 0 && (s[len(s)-1] < '0' || s[len(s)-1] > '9') {
-			return fmt.Errorf("CCN is invalid")
+			return errors.New("CCN is invalid")
 		}
 		if len(s)%5 == 0 && s[len(s)-1] != ' ' {
-			return fmt.Errorf("CCN must separate groups with spaces")
+			return errors.New("CCN must separate groups with spaces")
 		}
 		c := strings.ReplaceAll(s, " ", "")
 		_, err := strconv.ParseInt(c, 10, 64)
@@ -324,22 +339,22 @@ func newCardModel(cli *CLI) *cardForm {
 	}
 	m.ccn.Focus()
 
-	m.exp.CharLimit = 5
+	m.exp.CharLimit = expCharLimit
 	m.exp.Placeholder = "MM/YY"
 	m.exp.Prompt = ""
 	m.exp.Validate = func(s string) error {
 		e := strings.ReplaceAll(s, "/", "")
 		_, err := strconv.ParseInt(e, 10, 64)
 		if err != nil {
-			return fmt.Errorf("EXP is invalid")
+			return errors.New("EXP is invalid")
 		}
 		if len(s) >= 3 && (strings.Index(s, "/") != 2 || strings.LastIndex(s, "/") != 2) {
-			return fmt.Errorf("EXP is invalid")
+			return errors.New("EXP is invalid")
 		}
 		return nil
 	}
 
-	m.cvv.CharLimit = 3
+	m.cvv.CharLimit = cvvCharLimit
 	m.cvv.EchoMode = textinput.EchoPassword
 	m.cvv.Placeholder = "123"
 	m.cvv.Prompt = ""
@@ -348,7 +363,7 @@ func newCardModel(cli *CLI) *cardForm {
 		return err
 	}
 
-	m.holder.CharLimit = 64
+	m.holder.CharLimit = holderCharLimit
 	m.holder.Placeholder = "CARD HOLDER"
 	m.holder.Prompt = ""
 
@@ -435,7 +450,7 @@ func (c *cardForm) saveCardToServer(card *models.CardCreds) tea.Cmd {
 	return func() tea.Msg {
 		content, err := json.Marshal(card)
 		if err != nil {
-			return NewErrorModel(err)
+			return NewModelError(err)
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
@@ -443,7 +458,7 @@ func (c *cardForm) saveCardToServer(card *models.CardCreds) tea.Cmd {
 		resp, err := c.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
-				return NewErrorModel(e.Err())
+				return NewModelError(e.Err())
 			}
 		}
 		c.resID = int(resp.Resource.GetId())
@@ -514,15 +529,15 @@ func newCredModel(cli *CLI) *credForm {
 		password:    textinput.New(),
 		help:        help.New(),
 	}
-	m.description.CharLimit = 32
+	m.description.CharLimit = descriptionCharLimit
 	m.description.Placeholder = "type your description"
 	m.description.Focus()
 
-	m.username.CharLimit = 32
+	m.username.CharLimit = usernameCharLimit
 	m.username.Prompt = "Username: "
 	m.username.Placeholder = "type username..."
 
-	m.password.CharLimit = 32
+	m.password.CharLimit = passwordCharLimit
 	m.password.Prompt = "Password: "
 	m.password.Placeholder = "type password..."
 	m.password.EchoMode = textinput.EchoPassword
@@ -618,7 +633,7 @@ func (c *credForm) saveCredToServer(creds *models.Creds) tea.Cmd {
 	return func() tea.Msg {
 		content, err := json.Marshal(creds)
 		if err != nil {
-			return NewErrorModel(err)
+			return NewModelError(err)
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
@@ -627,7 +642,7 @@ func (c *credForm) saveCredToServer(creds *models.Creds) tea.Cmd {
 		resp, err := c.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
-				return NewErrorModel(e.Err())
+				return NewModelError(e.Err())
 			}
 		}
 		c.resID = int(resp.Resource.GetId())

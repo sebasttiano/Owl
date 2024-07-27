@@ -138,7 +138,7 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.loaded {
 			if err := m.updateColumns(); err != nil {
 				if e, ok := status.FromError(err); ok {
-					return NewErrorModel(e.Err()), nil
+					return NewModelError(e.Err()), nil
 				}
 			}
 		}

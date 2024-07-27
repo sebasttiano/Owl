@@ -2,13 +2,14 @@ package cli
 
 import (
 	"context"
+	"time"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 const APPEND = -1

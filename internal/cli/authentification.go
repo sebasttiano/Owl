@@ -22,6 +22,7 @@ var (
 	ErrCanceledByUser       = errors.New("authentication canceled by user")
 	ErrUnknownModelType     = errors.New("unknown model type")
 	ErrRegisterPassMismatch = errors.New("passwords are not the same")
+	ErrCloseSignBoard       = errors.New("sign board closed unexpectedly")
 )
 
 var signBoard *SignBoard
@@ -37,17 +38,24 @@ func (c *CLI) GetUserCreds(ctx context.Context, tlsCreds credentials.TransportCr
 	if err != nil {
 		return "", "", err
 	}
-
-	model, ok := m.(signInModel)
-	if !ok {
+	switch m := m.(type) {
+	case *SignBoard:
+		if m.cancelled {
+			return "", "", ErrCanceledByUser
+		}
+	case *signInModel:
+		if m.cancelled {
+			return "", "", ErrCanceledByUser
+		}
+		return m.username.Value(), m.password.Value(), nil
+	case *signUpModel:
+		if m.cancelled {
+			return "", "", ErrCanceledByUser
+		}
+	default:
 		return "", "", ErrUnknownModelType
 	}
-
-	if model.cancelled {
-		return "", "", ErrCanceledByUser
-	}
-	return model.username.Value(), model.password.Value(), nil
-
+	return "", "", ErrCloseSignBoard
 }
 
 type SignBoard struct {
@@ -56,7 +64,6 @@ type SignBoard struct {
 	help          help.Model
 	width, height int
 	loaded        bool
-	cli           *CLI
 	banner        string
 }
 
@@ -92,9 +99,9 @@ func (s *SignBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return s, tea.Quit
 		case key.Matches(msg, keys.Enter):
 			switch option := s.list.SelectedItem().(type) {
-			case signInModel:
+			case *signInModel:
 				return option.Update(nil)
-			case signUpModel:
+			case *signUpModel:
 				return option.Update(nil)
 			}
 		}
@@ -133,12 +140,12 @@ type signUpModel struct {
 }
 
 // Init implements tea.Model.
-func (s signUpModel) Init() tea.Cmd {
+func (s *signUpModel) Init() tea.Cmd {
 	return textinput.Blink
 }
 
 // Update implements tea.Model.
-func (s signUpModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *signUpModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var (
 		usernameCmd   tea.Cmd
 		passwordCmd   tea.Cmd
@@ -173,7 +180,7 @@ func (s signUpModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				s.repeatPassword.Blur()
 				if s.password.Value() != s.repeatPassword.Value() {
-					return NewErrorModel(ErrRegisterPassMismatch), nil
+					return NewModelError(ErrRegisterPassMismatch), nil
 				}
 
 				return s, s.makeRegistration
@@ -194,19 +201,19 @@ func (s signUpModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return s, tea.Batch(usernameCmd, passwordCmd, repeatPassCmd)
 }
 
-func (s signUpModel) makeRegistration() tea.Msg {
+func (s *signUpModel) makeRegistration() tea.Msg {
 
 	regConn, err := grpc.NewClient(
 		s.cli.cfg.GetServerAddress(),
 		grpc.WithTransportCredentials(s.tls))
 
 	if err != nil {
-		return NewErrorModel(err)
+		return NewModelError(err)
 	}
 
 	s.cli.Client, err = NewGRPCClient(regConn)
 	if err != nil {
-		return NewErrorModel(err)
+		return NewModelError(err)
 	}
 
 	request := pb.RegisterRequest{Name: s.username.Value(), Password: s.password.Value()}
@@ -216,14 +223,14 @@ func (s signUpModel) makeRegistration() tea.Msg {
 	_, err = s.cli.Client.Auth.Register(ctx, &request)
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
-			return NewErrorModel(e.Err())
+			return NewModelError(e.Err())
 		}
 	}
 	return signBoard
 }
 
 // View implements tea.Model.
-func (s signUpModel) View() string {
+func (s *signUpModel) View() string {
 	return form(
 		s.width, s.height,
 		"Register to Owl",
@@ -239,19 +246,19 @@ func (s signUpModel) View() string {
 }
 
 // implement the list.Item interface
-func (s signUpModel) FilterValue() string {
+func (s *signUpModel) FilterValue() string {
 	return s.item.title
 }
 
-func (s signUpModel) Title() string {
+func (s *signUpModel) Title() string {
 	return s.item.title
 }
 
-func (s signUpModel) Description() string {
+func (s *signUpModel) Description() string {
 	return s.item.description
 }
 
-func newSignUpModel(title, description string, c *CLI, tlsCreds credentials.TransportCredentials) signUpModel {
+func newSignUpModel(title, description string, c *CLI, tlsCreds credentials.TransportCredentials) *signUpModel {
 	m := signUpModel{
 		cancelled:      false,
 		username:       textinput.New(),
@@ -264,22 +271,22 @@ func newSignUpModel(title, description string, c *CLI, tlsCreds credentials.Tran
 		cli: c,
 		tls: tlsCreds,
 	}
-	m.username.CharLimit = 32
+	m.username.CharLimit = usernameCharLimit
 	m.username.Prompt = "Username: "
 	m.username.Placeholder = "type your username..."
 
-	m.password.CharLimit = 32
+	m.password.CharLimit = passwordCharLimit
 	m.password.Prompt = "Password: "
 	m.password.EchoMode = textinput.EchoPassword
 	m.password.Placeholder = "type your password..."
 
-	m.repeatPassword.CharLimit = 32
+	m.repeatPassword.CharLimit = passwordCharLimit
 	m.repeatPassword.Prompt = "Repeat Password: "
 	m.repeatPassword.EchoMode = textinput.EchoPassword
 	m.repeatPassword.Placeholder = "repeat your password again..."
 
 	m.username.Focus()
-	return m
+	return &m
 }
 
 type signInModel struct {
@@ -292,12 +299,12 @@ type signInModel struct {
 }
 
 // Init implements tea.Model.
-func (s signInModel) Init() tea.Cmd {
+func (s *signInModel) Init() tea.Cmd {
 	return textinput.Blink
 }
 
 // Update implements tea.Model.
-func (s signInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (s *signInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var (
 		usernameCmd tea.Cmd
 		passwordCmd tea.Cmd
@@ -334,7 +341,7 @@ func (s signInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // View implements tea.Model.
-func (s signInModel) View() string {
+func (s *signInModel) View() string {
 	return form(
 		s.width, s.height,
 		"Login to Owl",
@@ -348,19 +355,19 @@ func (s signInModel) View() string {
 }
 
 // FilterValue implement the list.Item interface
-func (s signInModel) FilterValue() string {
+func (s *signInModel) FilterValue() string {
 	return s.item.title
 }
 
-func (s signInModel) Title() string {
+func (s *signInModel) Title() string {
 	return s.item.title
 }
 
-func (s signInModel) Description() string {
+func (s *signInModel) Description() string {
 	return s.item.description
 }
 
-func newSignInModel(title, description string) signInModel {
+func newSignInModel(title, description string) *signInModel {
 	m := signInModel{
 		cancelled: false,
 		username:  textinput.New(),
@@ -370,15 +377,15 @@ func newSignInModel(title, description string) signInModel {
 			description: description,
 		},
 	}
-	m.username.CharLimit = 32
+	m.username.CharLimit = usernameCharLimit
 	m.username.Prompt = "Username: "
 	m.username.Placeholder = "type your username..."
 
-	m.password.CharLimit = 32
+	m.password.CharLimit = passwordCharLimit
 	m.password.Prompt = "Password: "
 	m.password.EchoMode = textinput.EchoPassword
 	m.password.Placeholder = "type your password..."
 
 	m.username.Focus()
-	return m
+	return &m
 }
