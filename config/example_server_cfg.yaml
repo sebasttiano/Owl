@@ -1,0 +1,17 @@
+database:
+  name:
+  username:
+  password:
+  host: "localhost"
+  port: 5432
+  sslmode: "disable"
+server:
+  host: 127.0.0.1
+  port: 8081
+  secret:
+  token_duration: 300
+cert:
+  cert: "cert/server-cert.pem"
+  key: "cert/server-key.pem"
+log:
+  level: "info"

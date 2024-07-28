@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+package main;
+
+option go_package = "github.com/sebasttiano/Owl/internal/proto";
+
+message RegisterRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message LoginRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+}
+
+service Auth {
+  rpc Register(RegisterRequest) returns (google.protobuf.Empty);
+  rpc Login(LoginRequest) returns (LoginResponse);
+}
+
+message ResourceMeta {
+  int32 id = 1;
+  string description = 2;
+  string type = 3;
+}
+
+message ResourceMsg {
+  bytes content = 1;
+  string description = 2;
+  string type = 3;
+}
+
+message SetResourceRequest {
+  ResourceMsg resource = 1;
+}
+
+message GetResourceRequest {
+  int32 id = 1;
+}
+
+message GetResourceResponse {
+  ResourceMsg resource = 1;
+}
+
+
+message GetAllResourcesResponse {
+  repeated ResourceMeta resources = 1;
+}
+
+message SetResourceResponse {
+  ResourceMeta resource = 1;
+}
+
+message DeleteResourceRequest {
+  int32 id = 1;
+}
+
+service Resource {
+  rpc SetResource(SetResourceRequest) returns (SetResourceResponse);
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse);
+  rpc GetAllResources(google.protobuf.Empty) returns (GetAllResourcesResponse);
+  rpc DeleteResource(DeleteResourceRequest) returns (google.protobuf.Empty);
+}

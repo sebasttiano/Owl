@@ -10,7 +10,6 @@ linters-settings:
         list-mode: lax
         allow:
           - $gostd
-          - github.com/prometheus
   gofumpt:
     module-path: Owl
 
@@ -20,19 +19,19 @@ linters:
   enable-all: true
   disable:
     - dupl
-#    - gochecknoglobals
-#    - gochecknoinits
-#    - gosec
-#    - lll
-#    - funlen
-#    - wsl
-#    - gomnd
-#    - testpackage
-#    - goerr113
-#    - godot
-#    - paralleltest
-#    - exhaustivestruct
-#    - wrapcheck
-#    - forbidigo
-#    - exhaustruct
-#    - goimports
+    - gochecknoglobals
+    - gochecknoinits
+    - gosec
+    - lll
+    - funlen
+    - wsl
+    - gomnd
+    - testpackage
+    - goerr113
+    - godot
+    - paralleltest
+    - exhaustivestruct
+    - wrapcheck
+    - varnamelen
+    - forbidigo
+    - exhaustruct

@@ -13,7 +13,7 @@
 
 # Binaries
 cmd/server/server
-cmd/client/client
+cmd/cli/cli
 
 # Dependency directories (remove the comment below to include it)
 vendor/
@@ -24,3 +24,10 @@ vendor/
 
 
 cover.txt
+# TLS files
+*.pem
+*.srl
+
+# Config files
+config/client_cfg.yaml
+config/server_cfg.yaml

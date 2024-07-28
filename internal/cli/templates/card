@@ -1,0 +1,4 @@
+Card Number: {{.CCN}}
+Expiration Date    CVV
+  {{.EXP}}            {{.CVV}}
+Card Holder  {{.Holder}}

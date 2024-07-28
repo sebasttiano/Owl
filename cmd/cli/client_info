@@ -1,0 +1,2 @@
+Build version: {{.Version}}
+Build date: {{.Date}}
