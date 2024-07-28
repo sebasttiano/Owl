@@ -38,7 +38,7 @@ func TestResourceServer_SetResource(t *testing.T) {
 			name: "OK set text",
 			in: &pb.SetResourceRequest{Resource: &pb.ResourceMsg{
 				Type:        string(models.Text),
-				Content:     "Zhili bili ded and babka",
+				Content:     []byte("Zhili bili ded and babka"),
 				Description: "Kolobok",
 			}},
 			mockBehaviour: func(r *mockservice.MockResourceServ, in *pb.SetResourceRequest) {
@@ -55,7 +55,7 @@ func TestResourceServer_SetResource(t *testing.T) {
 			name: "OK set bank",
 			in: &pb.SetResourceRequest{Resource: &pb.ResourceMsg{
 				Type:        string(models.Card),
-				Content:     "'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'",
+				Content:     []byte("'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'"),
 				Description: "MY BANK",
 			}},
 			mockBehaviour: func(r *mockservice.MockResourceServ, in *pb.SetResourceRequest) {
@@ -72,7 +72,7 @@ func TestResourceServer_SetResource(t *testing.T) {
 			name: "OK set creds",
 			in: &pb.SetResourceRequest{Resource: &pb.ResourceMsg{
 				Type:        string(models.Password),
-				Content:     "'username': 'ivan', 'password': 'supersecret'",
+				Content:     []byte("'username': 'ivan', 'password': 'supersecret'"),
 				Description: "mail",
 			}},
 			mockBehaviour: func(r *mockservice.MockResourceServ, in *pb.SetResourceRequest) {
@@ -89,7 +89,7 @@ func TestResourceServer_SetResource(t *testing.T) {
 			name: "NOT OK set resource",
 			in: &pb.SetResourceRequest{Resource: &pb.ResourceMsg{
 				Type:        string(models.Password),
-				Content:     "'username': 'ivan', 'password': 'supersecret'",
+				Content:     []byte("'username': 'ivan', 'password': 'supersecret'"),
 				Description: "my first pass",
 			}},
 			mockBehaviour: func(r *mockservice.MockResourceServ, in *pb.SetResourceRequest) {
@@ -161,11 +161,11 @@ func TestResourceServer_GetResource(t *testing.T) {
 				respRes := res
 				res.UserID = 1
 				respRes.Description = "Kolobok"
-				respRes.Content = "Zhili bili ded and babka"
+				respRes.Content = []byte("Zhili bili ded and babka")
 				respRes.Type = models.Text
 				r.EXPECT().GetResource(gomock.Any(), &res).Return(&respRes, nil)
 			},
-			expected: &pb.GetResourceResponse{Resource: &pb.ResourceMsg{Type: string(models.Text), Content: "Zhili bili ded and babka",
+			expected: &pb.GetResourceResponse{Resource: &pb.ResourceMsg{Type: string(models.Text), Content: []byte("Zhili bili ded and babka"),
 				Description: "Kolobok"}},
 			err: nil,
 		},
@@ -177,11 +177,11 @@ func TestResourceServer_GetResource(t *testing.T) {
 				respRes := res
 				res.UserID = 1
 				respRes.Description = "MY BANK"
-				respRes.Content = "'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'"
+				respRes.Content = []byte("'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'")
 				respRes.Type = models.Card
 				r.EXPECT().GetResource(gomock.Any(), &res).Return(&respRes, nil)
 			},
-			expected: &pb.GetResourceResponse{Resource: &pb.ResourceMsg{Type: string(models.Card), Content: "'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'",
+			expected: &pb.GetResourceResponse{Resource: &pb.ResourceMsg{Type: string(models.Card), Content: []byte("'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'"),
 				Description: "MY BANK"}},
 			err: nil,
 		},
@@ -193,11 +193,11 @@ func TestResourceServer_GetResource(t *testing.T) {
 				respRes := res
 				res.UserID = 1
 				respRes.Description = "my first pass"
-				respRes.Content = "'username': 'ivan', 'password': 'supersecret'"
+				respRes.Content = []byte("'username': 'ivan', 'password': 'supersecret'")
 				respRes.Type = models.Password
 				r.EXPECT().GetResource(gomock.Any(), &res).Return(&respRes, nil)
 			},
-			expected: &pb.GetResourceResponse{Resource: &pb.ResourceMsg{Type: string(models.Password), Content: "'username': 'ivan', 'password': 'supersecret'",
+			expected: &pb.GetResourceResponse{Resource: &pb.ResourceMsg{Type: string(models.Password), Content: []byte("'username': 'ivan', 'password': 'supersecret'"),
 				Description: "my first pass"}},
 			err: nil,
 		},
@@ -283,19 +283,19 @@ func TestResourceServer_GetAllResources(t *testing.T) {
 						Type:        models.Text,
 						ID:          9,
 						Description: "Kolobok",
-						Content:     "Zhili bili ded and babka",
+						Content:     []byte("Zhili bili ded and babka"),
 					},
 					{
 						Type:        models.Card,
 						ID:          10,
 						Description: "MY BANK",
-						Content:     "'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'",
+						Content:     []byte("'ccn': '3343 4890 5543 1290', 'exp': '04/25', 'cvv': '109', 'holder': 'Ivanov Ivan'"),
 					},
 					{
 						Type:        models.Password,
 						ID:          11,
 						Description: "my first pass",
-						Content:     "'username': 'ivan', 'password': 'supersecret'",
+						Content:     []byte("'username': 'ivan', 'password': 'supersecret'"),
 					},
 				}
 				r.EXPECT().GetAllResources(gomock.Any(), 1).Return(res, nil)

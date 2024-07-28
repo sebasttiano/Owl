@@ -11,7 +11,6 @@ import (
 // GRPCClient реализующий интерфейс Sender, отправляет на gRPC сервер
 type GRPCClient struct {
 	Auth     pb.AuthClient
-	Binary   pb.BinaryClient
 	Resource pb.ResourceClient
 	conn     *grpc.ClientConn
 	username string
@@ -22,12 +21,10 @@ type GRPCClient struct {
 func NewGRPCClient(conn *grpc.ClientConn) (*GRPCClient, error) {
 	// устанавливаем соединение с сервером
 	auth := pb.NewAuthClient(conn)
-	binary := pb.NewBinaryClient(conn)
 	text := pb.NewResourceClient(conn)
 
 	return &GRPCClient{
 		Auth:     auth,
-		Binary:   binary,
 		Resource: text,
 		conn:     conn,
 	}, nil

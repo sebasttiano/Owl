@@ -179,8 +179,11 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case *credForm:
 		m.cols[credType].Set(APPEND, msg.createResource())
 		return m, nil
-	//case *fileForm
-	case ModelError:
+	case *fileForm:
+		if msg.mode == fileUpload {
+			m.cols[fileType].Set(APPEND, msg.createResource())
+		}
+	case *ModelError:
 		return msg.Update(nil)
 	}
 

@@ -7,11 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
-	"text/template"
-	"time"
-
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
@@ -21,6 +16,11 @@ import (
 	"github.com/sebasttiano/Owl/internal/models"
 	pb "github.com/sebasttiano/Owl/internal/proto"
 	"google.golang.org/grpc/status"
+	"os"
+	"strconv"
+	"strings"
+	"text/template"
+	"time"
 )
 
 const (
@@ -36,10 +36,28 @@ const (
 	filePathCharLimit    = 128
 )
 
+type fileFormMode int
+
+func (m *fileFormMode) getTitle() string {
+	switch *m {
+	case fileUpload:
+		return "Upload File"
+	case fileDownload:
+		return "Download File"
+	}
+	return ""
+}
+
+const (
+	fileUpload fileFormMode = iota
+	fileDownload
+)
+
 var (
 	ErrRenderTemplate = errors.New("error to render info template")
 	ErrOutputType     = errors.New("unknown resource type")
 )
+
 var (
 	//go:embed templates/card
 	cardInfo string
@@ -76,7 +94,7 @@ type textForm struct {
 func newModel(cli *CLI, resType resType) tea.Model {
 	switch resType {
 	case 3:
-		return newFileModel(cli)
+		return newFileModel(cli, fileUpload, 0)
 	case 2:
 		return newTextModel(cli)
 	case 1:
@@ -163,7 +181,7 @@ func (f *textForm) saveTextToServer(description, content string) tea.Cmd {
 	return func() tea.Msg {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
-		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: content, Description: description, Type: string(models.Text)}}
+		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: []byte(content), Description: description, Type: string(models.Text)}}
 		resp, err := f.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
@@ -257,10 +275,10 @@ func (o *outputForm) getContent() tea.Model {
 	res := resp.Resource
 	switch res.GetType() {
 	case string(models.Text):
-		o.content = resp.Resource.GetContent()
+		o.content = string(resp.Resource.GetContent())
 	case string(models.Card):
 		var card models.CardCreds
-		if err := json.Unmarshal([]byte(res.GetContent()), &card); err != nil {
+		if err := json.Unmarshal(res.GetContent(), &card); err != nil {
 			return NewModelError(err)
 		}
 
@@ -276,7 +294,7 @@ func (o *outputForm) getContent() tea.Model {
 
 	case string(models.Password):
 		var creds models.Creds
-		if err := json.Unmarshal([]byte(res.GetContent()), &creds); err != nil {
+		if err := json.Unmarshal(res.GetContent(), &creds); err != nil {
 			return NewModelError(err)
 		}
 
@@ -289,6 +307,8 @@ func (o *outputForm) getContent() tea.Model {
 			return NewModelError(ErrRenderTemplate)
 		}
 		o.content = buf.String()
+	case string(models.Binary):
+		return newFileModel(o.cli, fileDownload, o.resID)
 	default:
 		return NewModelError(ErrOutputType)
 	}
@@ -457,7 +477,7 @@ func (c *cardForm) saveCardToServer(card *models.CardCreds) tea.Cmd {
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
-		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: string(content), Description: card.Description, Type: string(models.Card)}}
+		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: content, Description: card.Description, Type: string(models.Card)}}
 		resp, err := c.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
@@ -641,7 +661,7 @@ func (c *credForm) saveCredToServer(creds *models.Creds) tea.Cmd {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
-		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: string(content), Description: creds.Description, Type: string(models.Password)}}
+		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: content, Description: creds.Description, Type: string(models.Password)}}
 		resp, err := c.cli.Client.Resource.SetResource(ctx, &request)
 		if err != nil {
 			if e, ok := status.FromError(err); ok {
@@ -661,18 +681,27 @@ type fileForm struct {
 	cli           *CLI
 	help          help.Model
 	resID         int
+	mode          fileFormMode
 }
 
-func newFileModel(cli *CLI) *fileForm {
+func newFileModel(cli *CLI, mode fileFormMode, resID int) *fileForm {
 	m := fileForm{
 		cli:         cli,
 		description: textinput.New(),
 		filePath:    textinput.New(),
 		help:        help.New(),
+		mode:        mode,
+		resID:       resID,
 	}
 	m.description.CharLimit = descriptionCharLimit
 	m.description.Placeholder = "type your description"
-	m.description.Focus()
+	switch mode {
+	case fileUpload:
+		m.description.Focus()
+	case fileDownload:
+		m.description.Blur()
+		m.filePath.Focus()
+	}
 
 	m.filePath.CharLimit = filePathCharLimit
 	m.filePath.Prompt = "File: "
@@ -722,18 +751,22 @@ func (f *fileForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			f.cancelled = true
 			return f, tea.Quit
 		case key.Matches(msg, keys.Save):
-			if len(f.description.Value()) > 0 && len(f.filePath.Value()) > 0 {
-				_ = &models.File{
+			if len(f.filePath.Value()) > 0 {
+				file := &models.File{
 					Description: f.description.Value(),
 					Path:        f.filePath.Value(),
 				}
-				//return f, f.saveCredToServer(creds)
-				return f, nil
+				switch f.mode {
+				case fileUpload:
+					return f, f.saveFileToServer(file)
+				case fileDownload:
+					return f, f.saveFileToLocal(file)
+				}
 			}
 		}
 	case *fileForm:
 		return mainBoard.Update(f)
-	case ModelError:
+	case *ModelError:
 		return mainBoard.Update(msg)
 	}
 	return f, tea.Batch(descriptionCmd, filePathCmd)
@@ -743,7 +776,7 @@ func (f *fileForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (f *fileForm) View() string {
 	return form(
 		f.width, f.height,
-		"Credentials",
+		f.mode.getTitle(),
 		lipgloss.JoinVertical(
 			lipgloss.Left,
 			f.description.View(),
@@ -755,4 +788,46 @@ func (f *fileForm) View() string {
 			),
 		),
 	)
+}
+
+func (f *fileForm) saveFileToLocal(file *models.File) tea.Cmd {
+	return func() tea.Msg {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		request := &pb.GetResourceRequest{Id: int32(f.resID)}
+		resp, err := f.cli.Client.Resource.GetResource(ctx, request)
+		if err != nil {
+			return NewModelError(err)
+		}
+
+		resp.Resource.GetContent()
+		if err := os.WriteFile(file.Path, resp.Resource.GetContent(), 0644); err != nil {
+			return NewModelError(err)
+		}
+		return f
+	}
+}
+
+func (f *fileForm) saveFileToServer(file *models.File) tea.Cmd {
+	return func() tea.Msg {
+
+		content, err := os.ReadFile(file.Path)
+		if err != nil {
+			return NewModelError(err)
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		request := pb.SetResourceRequest{Resource: &pb.ResourceMsg{Content: content, Description: file.Description, Type: string(models.Binary)}}
+		resp, err := f.cli.Client.Resource.SetResource(ctx, &request)
+		if err != nil {
+			if e, ok := status.FromError(err); ok {
+				return NewModelError(e.Err())
+			}
+		}
+		f.resID = int(resp.Resource.GetId())
+		return f
+	}
 }

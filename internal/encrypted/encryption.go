@@ -24,7 +24,7 @@ type Data struct {
 }
 
 // PasswordEncryption returns password based encryption data.
-func PasswordEncryption(password string, ciph Cipher, content string) (*models.Piece, error) {
+func PasswordEncryption(password string, ciph Cipher, content []byte) (*models.Piece, error) {
 	salt := make([]byte, 8)
 	if _, err := rand.Read(salt); err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func PasswordEncryption(password string, ciph Cipher, content string) (*models.P
 
 	reader := cipher.StreamReader{
 		S: ciph.Encrypter(block, iv),
-		R: bytes.NewReader([]byte(content)),
+		R: bytes.NewReader(content),
 	}
 
 	encryptedContent, err := io.ReadAll(reader)
@@ -57,13 +57,13 @@ func PasswordEncryption(password string, ciph Cipher, content string) (*models.P
 	return piece, nil
 }
 
-// PasswordDecryption ret
-func PasswordDecryption(password string, ciph Cipher, piece *models.Piece) (string, error) {
+// PasswordDecryption return decrypted password
+func PasswordDecryption(password string, ciph Cipher, piece *models.Piece) ([]byte, error) {
 	block, err := aes.NewCipher(
 		pbkdf2.Key([]byte(password), piece.Salt, keyIter, keyLen, sha256.New),
 	)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	reader := cipher.StreamReader{
@@ -72,7 +72,7 @@ func PasswordDecryption(password string, ciph Cipher, piece *models.Piece) (stri
 	}
 	content, err := io.ReadAll(reader)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(content), nil
+	return content, nil
 }

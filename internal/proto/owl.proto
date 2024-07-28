@@ -24,47 +24,6 @@ service Auth {
   rpc Login(LoginRequest) returns (LoginResponse);
 }
 
-message BinaryMeta {
-  int32 id = 1;
-  string description = 2;
-}
-
-message BinaryMsg {
-  bytes data = 1;
-  string description = 2;
-}
-
-message SetBinaryRequest {
-  BinaryMsg  binary = 1;
-}
-
-message SetBinaryResponse {
-  BinaryMeta binary = 1;
-}
-
-message GetBinaryRequest {
-  int32 id = 1;
-}
-
-message GetBinaryResponse {
-  BinaryMsg binary = 1;
-}
-
-message GetAllBinariesResponse {
-  repeated BinaryMsg binaries = 1;
-}
-
-message DeleteBinaryRequest {
-  int32 id = 1;
-}
-
-service Binary {
-  rpc SetBinary(SetBinaryRequest) returns (SetBinaryResponse);
-  rpc GetBinary(GetBinaryRequest) returns (GetBinaryResponse);
-  rpc GetAllBinaries(google.protobuf.Empty) returns (GetAllBinariesResponse);
-  rpc DeleteBinary(DeleteBinaryRequest) returns (google.protobuf.Empty);
-}
-
 message ResourceMeta {
   int32 id = 1;
   string description = 2;
@@ -72,7 +31,7 @@ message ResourceMeta {
 }
 
 message ResourceMsg {
-  string content = 1;
+  bytes content = 1;
   string description = 2;
   string type = 3;
 }
@@ -99,7 +58,7 @@ message SetResourceResponse {
 }
 
 message DeleteResourceRequest {
-  int32 id = 2;
+  int32 id = 1;
 }
 
 service Resource {

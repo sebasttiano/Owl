@@ -17,8 +17,7 @@ import (
 //go:generate mockgen -source=handler.go -destination=mocks/mock.go
 
 var (
-	ErrInternalGrpc   = errors.New("internal grpc server error")
-	ErrBadRequestGrpc = errors.New("bad request")
+	ErrInternalGrpc = errors.New("internal grpc server error")
 )
 
 var getUserIDFromContext = func(ctx context.Context) (int, error) {
@@ -41,11 +40,6 @@ type AuthServer struct {
 	pb.UnimplementedAuthServer
 }
 
-type BinaryServer struct {
-	Binary BinaryServ
-	pb.UnimplementedBinaryServer
-}
-
 type ResourceServer struct {
 	Resource ResourceServ
 	pb.UnimplementedResourceServer
@@ -54,13 +48,6 @@ type ResourceServer struct {
 type Authenticator interface {
 	Register(ctx context.Context, name, password string) error
 	Login(ctx context.Context, name, password string) (int, error)
-}
-
-type BinaryServ interface {
-	SetBinary(ctx context.Context, data models.Resource) error
-	GetBinary(ctx context.Context, id int) (models.Resource, error)
-	GetAllBinaries(ctx context.Context) ([]models.Resource, error)
-	DeleteBinary(ctx context.Context, id int) error
 }
 
 type ResourceServ interface {

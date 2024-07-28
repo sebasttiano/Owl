@@ -54,7 +54,6 @@ func NewGRPSServer(conn *sqlx.DB, settings *GRPSServerSettings) *GRPSServer {
 		Auth:     service.NewAuthService(repo),
 		JManager: j,
 	})
-	pb.RegisterBinaryServer(s, &handlers.BinaryServer{Binary: service.NewBinaryService(repo)})
 	pb.RegisterResourceServer(s, &handlers.ResourceServer{Resource: service.NewTextService(repo)})
 	return &GRPSServer{
 		srv: s,

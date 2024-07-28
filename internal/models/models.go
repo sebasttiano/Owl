@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-
 	"github.com/sebasttiano/Owl/internal/logger"
 	"go.uber.org/zap"
 )
@@ -30,8 +29,7 @@ type (
 		Meta        string       `db:"meta"`
 		Type        ResourceType `db:"type"`
 		Description string
-		Content     string
-		//Content []byte
+		Content     []byte
 	}
 	// Piece is a piece of encrypted information.
 	Piece struct {

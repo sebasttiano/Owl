@@ -26,8 +26,10 @@ func (e *ModelError) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		e.height = msg.Height
 		e.width = msg.Width
-	default:
+	case tea.KeyMsg:
 		return e, tea.Quit
+	default:
+		return e, nil
 	}
 	return e, nil
 }
