@@ -17,7 +17,7 @@ func NewResourceItem(t resType, resID int, description string) ResourceItem {
 
 // implement the list.Item interface
 func (t ResourceItem) FilterValue() string {
-	return t.title
+	return t.description
 }
 
 func (t ResourceItem) Title() string {

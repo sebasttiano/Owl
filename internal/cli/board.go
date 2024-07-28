@@ -26,7 +26,7 @@ var mainBoard *MainBoard
 type resType int
 
 func (s resType) getNext() resType {
-	if s == textType {
+	if s == fileType {
 		return credType
 	}
 	return s + 1
@@ -64,6 +64,7 @@ const (
 	credType resType = iota
 	cardType
 	textType
+	fileType
 )
 
 type MainBoard struct {
@@ -83,11 +84,13 @@ func (m *MainBoard) initLists() error {
 		newColumn(credType, m.cli),
 		newColumn(cardType, m.cli),
 		newColumn(textType, m.cli),
+		newColumn(fileType, m.cli),
 	}
 
 	m.cols[credType].list.Title = "Credentials"
 	m.cols[cardType].list.Title = "Bank cards"
 	m.cols[textType].list.Title = "Notes"
+	m.cols[fileType].list.Title = "Files"
 
 	return nil
 }
@@ -124,6 +127,9 @@ func (m *MainBoard) updateColumns() error {
 		case string(models.Password):
 			item := NewResourceItem(credType, int(res.Id), res.Description)
 			m.cols[credType].Set(APPEND, item)
+		case string(models.Binary):
+			item := NewResourceItem(fileType, int(res.Id), res.Description)
+			m.cols[fileType].Set(APPEND, item)
 		}
 	}
 	return nil
@@ -173,6 +179,7 @@ func (m *MainBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case *credForm:
 		m.cols[credType].Set(APPEND, msg.createResource())
 		return m, nil
+	//case *fileForm
 	case ModelError:
 		return msg.Update(nil)
 	}
@@ -198,6 +205,7 @@ func (m *MainBoard) View() string {
 		m.cols[credType].View(),
 		m.cols[cardType].View(),
 		m.cols[textType].View(),
+		m.cols[fileType].View(),
 	)
 	return lipgloss.JoinVertical(lipgloss.Left, board, m.help.View(&keys), m.help.ShortHelpView([]key.Binding{keys.New, keys.Enter, keys.Delete}))
 }

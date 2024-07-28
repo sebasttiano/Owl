@@ -7,12 +7,11 @@
 package proto
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -179,6 +178,61 @@ func (x *LoginResponse) GetToken() string {
 	return ""
 }
 
+type BinaryMeta struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id          int32  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+}
+
+func (x *BinaryMeta) Reset() {
+	*x = BinaryMeta{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_proto_owl_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *BinaryMeta) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BinaryMeta) ProtoMessage() {}
+
+func (x *BinaryMeta) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_proto_owl_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BinaryMeta.ProtoReflect.Descriptor instead.
+func (*BinaryMeta) Descriptor() ([]byte, []int) {
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BinaryMeta) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *BinaryMeta) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
 type BinaryMsg struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -191,7 +245,7 @@ type BinaryMsg struct {
 func (x *BinaryMsg) Reset() {
 	*x = BinaryMsg{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[3]
+		mi := &file_internal_proto_owl_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -204,7 +258,7 @@ func (x *BinaryMsg) String() string {
 func (*BinaryMsg) ProtoMessage() {}
 
 func (x *BinaryMsg) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[3]
+	mi := &file_internal_proto_owl_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -217,7 +271,7 @@ func (x *BinaryMsg) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BinaryMsg.ProtoReflect.Descriptor instead.
 func (*BinaryMsg) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{3}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BinaryMsg) GetData() []byte {
@@ -239,13 +293,13 @@ type SetBinaryRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Binary *BinaryMsg `protobuf:"bytes,2,opt,name=binary,proto3" json:"binary,omitempty"`
+	Binary *BinaryMsg `protobuf:"bytes,1,opt,name=binary,proto3" json:"binary,omitempty"`
 }
 
 func (x *SetBinaryRequest) Reset() {
 	*x = SetBinaryRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[4]
+		mi := &file_internal_proto_owl_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -258,7 +312,7 @@ func (x *SetBinaryRequest) String() string {
 func (*SetBinaryRequest) ProtoMessage() {}
 
 func (x *SetBinaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[4]
+	mi := &file_internal_proto_owl_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,10 +325,57 @@ func (x *SetBinaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetBinaryRequest.ProtoReflect.Descriptor instead.
 func (*SetBinaryRequest) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{4}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *SetBinaryRequest) GetBinary() *BinaryMsg {
+	if x != nil {
+		return x.Binary
+	}
+	return nil
+}
+
+type SetBinaryResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Binary *BinaryMeta `protobuf:"bytes,1,opt,name=binary,proto3" json:"binary,omitempty"`
+}
+
+func (x *SetBinaryResponse) Reset() {
+	*x = SetBinaryResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_proto_owl_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SetBinaryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetBinaryResponse) ProtoMessage() {}
+
+func (x *SetBinaryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_proto_owl_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetBinaryResponse.ProtoReflect.Descriptor instead.
+func (*SetBinaryResponse) Descriptor() ([]byte, []int) {
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *SetBinaryResponse) GetBinary() *BinaryMeta {
 	if x != nil {
 		return x.Binary
 	}
@@ -286,13 +387,13 @@ type GetBinaryRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id int32 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *GetBinaryRequest) Reset() {
 	*x = GetBinaryRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[5]
+		mi := &file_internal_proto_owl_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -305,7 +406,7 @@ func (x *GetBinaryRequest) String() string {
 func (*GetBinaryRequest) ProtoMessage() {}
 
 func (x *GetBinaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[5]
+	mi := &file_internal_proto_owl_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -318,7 +419,7 @@ func (x *GetBinaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBinaryRequest.ProtoReflect.Descriptor instead.
 func (*GetBinaryRequest) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{5}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetBinaryRequest) GetId() int32 {
@@ -339,7 +440,7 @@ type GetBinaryResponse struct {
 func (x *GetBinaryResponse) Reset() {
 	*x = GetBinaryResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[6]
+		mi := &file_internal_proto_owl_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -352,7 +453,7 @@ func (x *GetBinaryResponse) String() string {
 func (*GetBinaryResponse) ProtoMessage() {}
 
 func (x *GetBinaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[6]
+	mi := &file_internal_proto_owl_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -365,7 +466,7 @@ func (x *GetBinaryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBinaryResponse.ProtoReflect.Descriptor instead.
 func (*GetBinaryResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{6}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetBinaryResponse) GetBinary() *BinaryMsg {
@@ -386,7 +487,7 @@ type GetAllBinariesResponse struct {
 func (x *GetAllBinariesResponse) Reset() {
 	*x = GetAllBinariesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[7]
+		mi := &file_internal_proto_owl_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -399,7 +500,7 @@ func (x *GetAllBinariesResponse) String() string {
 func (*GetAllBinariesResponse) ProtoMessage() {}
 
 func (x *GetAllBinariesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[7]
+	mi := &file_internal_proto_owl_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +513,7 @@ func (x *GetAllBinariesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllBinariesResponse.ProtoReflect.Descriptor instead.
 func (*GetAllBinariesResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{7}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetAllBinariesResponse) GetBinaries() []*BinaryMsg {
@@ -427,13 +528,13 @@ type DeleteBinaryRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id int32 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *DeleteBinaryRequest) Reset() {
 	*x = DeleteBinaryRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[8]
+		mi := &file_internal_proto_owl_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -446,7 +547,7 @@ func (x *DeleteBinaryRequest) String() string {
 func (*DeleteBinaryRequest) ProtoMessage() {}
 
 func (x *DeleteBinaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[8]
+	mi := &file_internal_proto_owl_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -459,7 +560,7 @@ func (x *DeleteBinaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBinaryRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBinaryRequest) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{8}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteBinaryRequest) GetId() int32 {
@@ -482,7 +583,7 @@ type ResourceMeta struct {
 func (x *ResourceMeta) Reset() {
 	*x = ResourceMeta{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[9]
+		mi := &file_internal_proto_owl_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -495,7 +596,7 @@ func (x *ResourceMeta) String() string {
 func (*ResourceMeta) ProtoMessage() {}
 
 func (x *ResourceMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[9]
+	mi := &file_internal_proto_owl_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -508,7 +609,7 @@ func (x *ResourceMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceMeta.ProtoReflect.Descriptor instead.
 func (*ResourceMeta) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{9}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ResourceMeta) GetId() int32 {
@@ -545,7 +646,7 @@ type ResourceMsg struct {
 func (x *ResourceMsg) Reset() {
 	*x = ResourceMsg{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[10]
+		mi := &file_internal_proto_owl_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -558,7 +659,7 @@ func (x *ResourceMsg) String() string {
 func (*ResourceMsg) ProtoMessage() {}
 
 func (x *ResourceMsg) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[10]
+	mi := &file_internal_proto_owl_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -571,7 +672,7 @@ func (x *ResourceMsg) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceMsg.ProtoReflect.Descriptor instead.
 func (*ResourceMsg) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{10}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ResourceMsg) GetContent() string {
@@ -600,13 +701,13 @@ type SetResourceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Resource *ResourceMsg `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
+	Resource *ResourceMsg `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
 }
 
 func (x *SetResourceRequest) Reset() {
 	*x = SetResourceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[11]
+		mi := &file_internal_proto_owl_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -619,7 +720,7 @@ func (x *SetResourceRequest) String() string {
 func (*SetResourceRequest) ProtoMessage() {}
 
 func (x *SetResourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[11]
+	mi := &file_internal_proto_owl_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -632,7 +733,7 @@ func (x *SetResourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetResourceRequest.ProtoReflect.Descriptor instead.
 func (*SetResourceRequest) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{11}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SetResourceRequest) GetResource() *ResourceMsg {
@@ -647,13 +748,13 @@ type GetResourceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id int32 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Id int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *GetResourceRequest) Reset() {
 	*x = GetResourceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[12]
+		mi := &file_internal_proto_owl_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -666,7 +767,7 @@ func (x *GetResourceRequest) String() string {
 func (*GetResourceRequest) ProtoMessage() {}
 
 func (x *GetResourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[12]
+	mi := &file_internal_proto_owl_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -679,7 +780,7 @@ func (x *GetResourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResourceRequest.ProtoReflect.Descriptor instead.
 func (*GetResourceRequest) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{12}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetResourceRequest) GetId() int32 {
@@ -700,7 +801,7 @@ type GetResourceResponse struct {
 func (x *GetResourceResponse) Reset() {
 	*x = GetResourceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[13]
+		mi := &file_internal_proto_owl_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -713,7 +814,7 @@ func (x *GetResourceResponse) String() string {
 func (*GetResourceResponse) ProtoMessage() {}
 
 func (x *GetResourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[13]
+	mi := &file_internal_proto_owl_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -726,7 +827,7 @@ func (x *GetResourceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResourceResponse.ProtoReflect.Descriptor instead.
 func (*GetResourceResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{13}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetResourceResponse) GetResource() *ResourceMsg {
@@ -747,7 +848,7 @@ type GetAllResourcesResponse struct {
 func (x *GetAllResourcesResponse) Reset() {
 	*x = GetAllResourcesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[14]
+		mi := &file_internal_proto_owl_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -760,7 +861,7 @@ func (x *GetAllResourcesResponse) String() string {
 func (*GetAllResourcesResponse) ProtoMessage() {}
 
 func (x *GetAllResourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[14]
+	mi := &file_internal_proto_owl_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -773,7 +874,7 @@ func (x *GetAllResourcesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllResourcesResponse.ProtoReflect.Descriptor instead.
 func (*GetAllResourcesResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{14}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetAllResourcesResponse) GetResources() []*ResourceMeta {
@@ -794,7 +895,7 @@ type SetResourceResponse struct {
 func (x *SetResourceResponse) Reset() {
 	*x = SetResourceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[15]
+		mi := &file_internal_proto_owl_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -807,7 +908,7 @@ func (x *SetResourceResponse) String() string {
 func (*SetResourceResponse) ProtoMessage() {}
 
 func (x *SetResourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[15]
+	mi := &file_internal_proto_owl_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -820,7 +921,7 @@ func (x *SetResourceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetResourceResponse.ProtoReflect.Descriptor instead.
 func (*SetResourceResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{15}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SetResourceResponse) GetResource() *ResourceMeta {
@@ -841,7 +942,7 @@ type DeleteResourceRequest struct {
 func (x *DeleteResourceRequest) Reset() {
 	*x = DeleteResourceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_owl_proto_msgTypes[16]
+		mi := &file_internal_proto_owl_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -854,7 +955,7 @@ func (x *DeleteResourceRequest) String() string {
 func (*DeleteResourceRequest) ProtoMessage() {}
 
 func (x *DeleteResourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_owl_proto_msgTypes[16]
+	mi := &file_internal_proto_owl_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -867,7 +968,7 @@ func (x *DeleteResourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteResourceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteResourceRequest) Descriptor() ([]byte, []int) {
-	return file_internal_proto_owl_proto_rawDescGZIP(), []int{16}
+	return file_internal_proto_owl_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *DeleteResourceRequest) GetId() int32 {
@@ -894,74 +995,82 @@ var file_internal_proto_owl_proto_rawDesc = []byte{
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64,
 	0x22, 0x25, 0x0a, 0x0d, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x41, 0x0a, 0x09, 0x42, 0x69, 0x6e, 0x61, 0x72,
+	0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x3e, 0x0a, 0x0a, 0x42, 0x69, 0x6e, 0x61, 0x72,
+	0x79, 0x4d, 0x65, 0x74, 0x61, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x63,
+	0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x41, 0x0a, 0x09, 0x42, 0x69, 0x6e, 0x61, 0x72,
 	0x79, 0x4d, 0x73, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63,
 	0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64,
 	0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x3b, 0x0a, 0x10, 0x53, 0x65,
 	0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x27,
-	0x0a, 0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f,
+	0x0a, 0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f,
 	0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x4d, 0x73, 0x67, 0x52,
-	0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x22, 0x22, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x42, 0x69,
-	0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69,
-	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x3c, 0x0a, 0x11, 0x47,
-	0x65, 0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x27, 0x0a, 0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0f, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x4d, 0x73,
-	0x67, 0x52, 0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x22, 0x45, 0x0a, 0x16, 0x47, 0x65, 0x74,
-	0x41, 0x6c, 0x6c, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x08, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x69, 0x65, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x42, 0x69, 0x6e,
-	0x61, 0x72, 0x79, 0x4d, 0x73, 0x67, 0x52, 0x08, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x69, 0x65, 0x73,
-	0x22, 0x25, 0x0a, 0x13, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x54, 0x0a, 0x0c, 0x52, 0x65, 0x73, 0x6f, 0x75,
-	0x72, 0x63, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72,
-	0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65,
-	0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70,
-	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x5d, 0x0a,
-	0x0b, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4d, 0x73, 0x67, 0x12, 0x18, 0x0a, 0x07,
-	0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69,
+	0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x22, 0x3d, 0x0a, 0x11, 0x53, 0x65, 0x74, 0x42, 0x69,
+	0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x06,
+	0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x6d,
+	0x61, 0x69, 0x6e, 0x2e, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x06,
+	0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x22, 0x22, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x42, 0x69, 0x6e,
+	0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x3c, 0x0a, 0x11, 0x47, 0x65,
+	0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x27, 0x0a, 0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0f, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x4d, 0x73, 0x67,
+	0x52, 0x06, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x22, 0x45, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x41,
+	0x6c, 0x6c, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x2b, 0x0a, 0x08, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x69, 0x65, 0x73, 0x18, 0x01,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x42, 0x69, 0x6e, 0x61,
+	0x72, 0x79, 0x4d, 0x73, 0x67, 0x52, 0x08, 0x62, 0x69, 0x6e, 0x61, 0x72, 0x69, 0x65, 0x73, 0x22,
+	0x25, 0x0a, 0x13, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x54, 0x0a, 0x0c, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69,
 	0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73,
 	0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x43, 0x0a, 0x12,
-	0x53, 0x65, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x2d, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x4d, 0x73, 0x67, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63,
-	0x65, 0x22, 0x24, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x44, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x52, 0x65,
-	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d,
-	0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x11, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x4d, 0x73, 0x67, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x22, 0x4b, 0x0a,
-	0x17, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x30, 0x0a, 0x09, 0x72, 0x65, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6d, 0x61,
-	0x69, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52,
-	0x09, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x22, 0x45, 0x0a, 0x13, 0x53, 0x65,
-	0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x2e, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75,
-	0x72, 0x63, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63,
-	0x65, 0x22, 0x27, 0x0a, 0x15, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x6f, 0x75,
-	0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x32, 0x73, 0x0a, 0x04, 0x41, 0x75,
-	0x74, 0x68, 0x12, 0x39, 0x0a, 0x08, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x15,
-	0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x30, 0x0a,
-	0x05, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x12, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x4c, 0x6f,
-	0x67, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x6d, 0x61, 0x69,
-	0x6e, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32,
-	0x8e, 0x02, 0x0a, 0x06, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x12, 0x3b, 0x0a, 0x09, 0x53, 0x65,
-	0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x12, 0x16, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x53,
-	0x65, 0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x3c, 0x0a, 0x09, 0x47, 0x65, 0x74, 0x42, 0x69,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x5d, 0x0a, 0x0b,
+	0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4d, 0x73, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x63,
+	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6f,
+	0x6e, 0x74, 0x65, 0x6e, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x63,
+	0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x43, 0x0a, 0x12, 0x53,
+	0x65, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x2d, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75,
+	0x72, 0x63, 0x65, 0x4d, 0x73, 0x67, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x22, 0x24, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x22, 0x44, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x52, 0x65, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a,
+	0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x11, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4d,
+	0x73, 0x67, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x22, 0x4b, 0x0a, 0x17,
+	0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x30, 0x0a, 0x09, 0x72, 0x65, 0x73, 0x6f, 0x75,
+	0x72, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6d, 0x61, 0x69,
+	0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x09,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x22, 0x45, 0x0a, 0x13, 0x53, 0x65, 0x74,
+	0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x2e, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x22, 0x27, 0x0a, 0x15, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x32, 0x73, 0x0a, 0x04, 0x41, 0x75, 0x74,
+	0x68, 0x12, 0x39, 0x0a, 0x08, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x15, 0x2e,
+	0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x30, 0x0a, 0x05,
+	0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x12, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x4c, 0x6f, 0x67,
+	0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x6d, 0x61, 0x69, 0x6e,
+	0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x8f,
+	0x02, 0x0a, 0x06, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x12, 0x3c, 0x0a, 0x09, 0x53, 0x65, 0x74,
+	0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x12, 0x16, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x53, 0x65,
+	0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17,
+	0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x53, 0x65, 0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x09, 0x47, 0x65, 0x74, 0x42, 0x69,
 	0x6e, 0x61, 0x72, 0x79, 0x12, 0x16, 0x2e, 0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x47, 0x65, 0x74, 0x42,
 	0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x6d,
 	0x61, 0x69, 0x6e, 0x2e, 0x47, 0x65, 0x74, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x52, 0x65, 0x73,
@@ -1010,60 +1119,63 @@ func file_internal_proto_owl_proto_rawDescGZIP() []byte {
 	return file_internal_proto_owl_proto_rawDescData
 }
 
-var file_internal_proto_owl_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_internal_proto_owl_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_internal_proto_owl_proto_goTypes = []interface{}{
 	(*RegisterRequest)(nil),         // 0: main.RegisterRequest
 	(*LoginRequest)(nil),            // 1: main.LoginRequest
 	(*LoginResponse)(nil),           // 2: main.LoginResponse
-	(*BinaryMsg)(nil),               // 3: main.BinaryMsg
-	(*SetBinaryRequest)(nil),        // 4: main.SetBinaryRequest
-	(*GetBinaryRequest)(nil),        // 5: main.GetBinaryRequest
-	(*GetBinaryResponse)(nil),       // 6: main.GetBinaryResponse
-	(*GetAllBinariesResponse)(nil),  // 7: main.GetAllBinariesResponse
-	(*DeleteBinaryRequest)(nil),     // 8: main.DeleteBinaryRequest
-	(*ResourceMeta)(nil),            // 9: main.ResourceMeta
-	(*ResourceMsg)(nil),             // 10: main.ResourceMsg
-	(*SetResourceRequest)(nil),      // 11: main.SetResourceRequest
-	(*GetResourceRequest)(nil),      // 12: main.GetResourceRequest
-	(*GetResourceResponse)(nil),     // 13: main.GetResourceResponse
-	(*GetAllResourcesResponse)(nil), // 14: main.GetAllResourcesResponse
-	(*SetResourceResponse)(nil),     // 15: main.SetResourceResponse
-	(*DeleteResourceRequest)(nil),   // 16: main.DeleteResourceRequest
-	(*emptypb.Empty)(nil),           // 17: google.protobuf.Empty
+	(*BinaryMeta)(nil),              // 3: main.BinaryMeta
+	(*BinaryMsg)(nil),               // 4: main.BinaryMsg
+	(*SetBinaryRequest)(nil),        // 5: main.SetBinaryRequest
+	(*SetBinaryResponse)(nil),       // 6: main.SetBinaryResponse
+	(*GetBinaryRequest)(nil),        // 7: main.GetBinaryRequest
+	(*GetBinaryResponse)(nil),       // 8: main.GetBinaryResponse
+	(*GetAllBinariesResponse)(nil),  // 9: main.GetAllBinariesResponse
+	(*DeleteBinaryRequest)(nil),     // 10: main.DeleteBinaryRequest
+	(*ResourceMeta)(nil),            // 11: main.ResourceMeta
+	(*ResourceMsg)(nil),             // 12: main.ResourceMsg
+	(*SetResourceRequest)(nil),      // 13: main.SetResourceRequest
+	(*GetResourceRequest)(nil),      // 14: main.GetResourceRequest
+	(*GetResourceResponse)(nil),     // 15: main.GetResourceResponse
+	(*GetAllResourcesResponse)(nil), // 16: main.GetAllResourcesResponse
+	(*SetResourceResponse)(nil),     // 17: main.SetResourceResponse
+	(*DeleteResourceRequest)(nil),   // 18: main.DeleteResourceRequest
+	(*emptypb.Empty)(nil),           // 19: google.protobuf.Empty
 }
 var file_internal_proto_owl_proto_depIdxs = []int32{
-	3,  // 0: main.SetBinaryRequest.binary:type_name -> main.BinaryMsg
-	3,  // 1: main.GetBinaryResponse.binary:type_name -> main.BinaryMsg
-	3,  // 2: main.GetAllBinariesResponse.binaries:type_name -> main.BinaryMsg
-	10, // 3: main.SetResourceRequest.resource:type_name -> main.ResourceMsg
-	10, // 4: main.GetResourceResponse.resource:type_name -> main.ResourceMsg
-	9,  // 5: main.GetAllResourcesResponse.resources:type_name -> main.ResourceMeta
-	9,  // 6: main.SetResourceResponse.resource:type_name -> main.ResourceMeta
-	0,  // 7: main.Auth.Register:input_type -> main.RegisterRequest
-	1,  // 8: main.Auth.Login:input_type -> main.LoginRequest
-	4,  // 9: main.Binary.SetBinary:input_type -> main.SetBinaryRequest
-	5,  // 10: main.Binary.GetBinary:input_type -> main.GetBinaryRequest
-	17, // 11: main.Binary.GetAllBinaries:input_type -> google.protobuf.Empty
-	8,  // 12: main.Binary.DeleteBinary:input_type -> main.DeleteBinaryRequest
-	11, // 13: main.Resource.SetResource:input_type -> main.SetResourceRequest
-	12, // 14: main.Resource.GetResource:input_type -> main.GetResourceRequest
-	17, // 15: main.Resource.GetAllResources:input_type -> google.protobuf.Empty
-	16, // 16: main.Resource.DeleteResource:input_type -> main.DeleteResourceRequest
-	17, // 17: main.Auth.Register:output_type -> google.protobuf.Empty
-	2,  // 18: main.Auth.Login:output_type -> main.LoginResponse
-	17, // 19: main.Binary.SetBinary:output_type -> google.protobuf.Empty
-	6,  // 20: main.Binary.GetBinary:output_type -> main.GetBinaryResponse
-	7,  // 21: main.Binary.GetAllBinaries:output_type -> main.GetAllBinariesResponse
-	17, // 22: main.Binary.DeleteBinary:output_type -> google.protobuf.Empty
-	15, // 23: main.Resource.SetResource:output_type -> main.SetResourceResponse
-	13, // 24: main.Resource.GetResource:output_type -> main.GetResourceResponse
-	14, // 25: main.Resource.GetAllResources:output_type -> main.GetAllResourcesResponse
-	17, // 26: main.Resource.DeleteResource:output_type -> google.protobuf.Empty
-	17, // [17:27] is the sub-list for method output_type
-	7,  // [7:17] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	4,  // 0: main.SetBinaryRequest.binary:type_name -> main.BinaryMsg
+	3,  // 1: main.SetBinaryResponse.binary:type_name -> main.BinaryMeta
+	4,  // 2: main.GetBinaryResponse.binary:type_name -> main.BinaryMsg
+	4,  // 3: main.GetAllBinariesResponse.binaries:type_name -> main.BinaryMsg
+	12, // 4: main.SetResourceRequest.resource:type_name -> main.ResourceMsg
+	12, // 5: main.GetResourceResponse.resource:type_name -> main.ResourceMsg
+	11, // 6: main.GetAllResourcesResponse.resources:type_name -> main.ResourceMeta
+	11, // 7: main.SetResourceResponse.resource:type_name -> main.ResourceMeta
+	0,  // 8: main.Auth.Register:input_type -> main.RegisterRequest
+	1,  // 9: main.Auth.Login:input_type -> main.LoginRequest
+	5,  // 10: main.Binary.SetBinary:input_type -> main.SetBinaryRequest
+	7,  // 11: main.Binary.GetBinary:input_type -> main.GetBinaryRequest
+	19, // 12: main.Binary.GetAllBinaries:input_type -> google.protobuf.Empty
+	10, // 13: main.Binary.DeleteBinary:input_type -> main.DeleteBinaryRequest
+	13, // 14: main.Resource.SetResource:input_type -> main.SetResourceRequest
+	14, // 15: main.Resource.GetResource:input_type -> main.GetResourceRequest
+	19, // 16: main.Resource.GetAllResources:input_type -> google.protobuf.Empty
+	18, // 17: main.Resource.DeleteResource:input_type -> main.DeleteResourceRequest
+	19, // 18: main.Auth.Register:output_type -> google.protobuf.Empty
+	2,  // 19: main.Auth.Login:output_type -> main.LoginResponse
+	6,  // 20: main.Binary.SetBinary:output_type -> main.SetBinaryResponse
+	8,  // 21: main.Binary.GetBinary:output_type -> main.GetBinaryResponse
+	9,  // 22: main.Binary.GetAllBinaries:output_type -> main.GetAllBinariesResponse
+	19, // 23: main.Binary.DeleteBinary:output_type -> google.protobuf.Empty
+	17, // 24: main.Resource.SetResource:output_type -> main.SetResourceResponse
+	15, // 25: main.Resource.GetResource:output_type -> main.GetResourceResponse
+	16, // 26: main.Resource.GetAllResources:output_type -> main.GetAllResourcesResponse
+	19, // 27: main.Resource.DeleteResource:output_type -> google.protobuf.Empty
+	18, // [18:28] is the sub-list for method output_type
+	8,  // [8:18] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_internal_proto_owl_proto_init() }
@@ -1109,7 +1221,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BinaryMsg); i {
+			switch v := v.(*BinaryMeta); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1121,7 +1233,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SetBinaryRequest); i {
+			switch v := v.(*BinaryMsg); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1133,7 +1245,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetBinaryRequest); i {
+			switch v := v.(*SetBinaryRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1145,7 +1257,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetBinaryResponse); i {
+			switch v := v.(*SetBinaryResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1157,7 +1269,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetAllBinariesResponse); i {
+			switch v := v.(*GetBinaryRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1169,7 +1281,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteBinaryRequest); i {
+			switch v := v.(*GetBinaryResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1181,7 +1293,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResourceMeta); i {
+			switch v := v.(*GetAllBinariesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1193,7 +1305,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResourceMsg); i {
+			switch v := v.(*DeleteBinaryRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1205,7 +1317,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SetResourceRequest); i {
+			switch v := v.(*ResourceMeta); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1217,7 +1329,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetResourceRequest); i {
+			switch v := v.(*ResourceMsg); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1229,7 +1341,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetResourceResponse); i {
+			switch v := v.(*SetResourceRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1241,7 +1353,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetAllResourcesResponse); i {
+			switch v := v.(*GetResourceRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1253,7 +1365,7 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SetResourceResponse); i {
+			switch v := v.(*GetResourceResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1265,6 +1377,30 @@ func file_internal_proto_owl_proto_init() {
 			}
 		}
 		file_internal_proto_owl_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetAllResourcesResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_proto_owl_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SetResourceResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_proto_owl_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteResourceRequest); i {
 			case 0:
 				return &v.state
@@ -1283,7 +1419,7 @@ func file_internal_proto_owl_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_proto_owl_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   3,
 		},

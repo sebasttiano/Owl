@@ -31,6 +31,7 @@ type (
 		Type        ResourceType `db:"type"`
 		Description string
 		Content     string
+		//Content []byte
 	}
 	// Piece is a piece of encrypted information.
 	Piece struct {
@@ -54,9 +55,14 @@ type (
 	}
 
 	Creds struct {
-		Description string
+		Description string `json:"description"`
 		Username    string `json:"username"`
 		Password    string `json:"password"`
+	}
+
+	File struct {
+		Description string `json:"description"`
+		Path        string `json:"path"`
 	}
 )
 

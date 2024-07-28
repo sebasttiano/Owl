@@ -8,7 +8,6 @@ package proto
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -158,7 +157,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BinaryClient interface {
-	SetBinary(ctx context.Context, in *SetBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SetBinary(ctx context.Context, in *SetBinaryRequest, opts ...grpc.CallOption) (*SetBinaryResponse, error)
 	GetBinary(ctx context.Context, in *GetBinaryRequest, opts ...grpc.CallOption) (*GetBinaryResponse, error)
 	GetAllBinaries(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllBinariesResponse, error)
 	DeleteBinary(ctx context.Context, in *DeleteBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -172,8 +171,8 @@ func NewBinaryClient(cc grpc.ClientConnInterface) BinaryClient {
 	return &binaryClient{cc}
 }
 
-func (c *binaryClient) SetBinary(ctx context.Context, in *SetBinaryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *binaryClient) SetBinary(ctx context.Context, in *SetBinaryRequest, opts ...grpc.CallOption) (*SetBinaryResponse, error) {
+	out := new(SetBinaryResponse)
 	err := c.cc.Invoke(ctx, Binary_SetBinary_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -212,7 +211,7 @@ func (c *binaryClient) DeleteBinary(ctx context.Context, in *DeleteBinaryRequest
 // All implementations must embed UnimplementedBinaryServer
 // for forward compatibility
 type BinaryServer interface {
-	SetBinary(context.Context, *SetBinaryRequest) (*emptypb.Empty, error)
+	SetBinary(context.Context, *SetBinaryRequest) (*SetBinaryResponse, error)
 	GetBinary(context.Context, *GetBinaryRequest) (*GetBinaryResponse, error)
 	GetAllBinaries(context.Context, *emptypb.Empty) (*GetAllBinariesResponse, error)
 	DeleteBinary(context.Context, *DeleteBinaryRequest) (*emptypb.Empty, error)
@@ -223,7 +222,7 @@ type BinaryServer interface {
 type UnimplementedBinaryServer struct {
 }
 
-func (UnimplementedBinaryServer) SetBinary(context.Context, *SetBinaryRequest) (*emptypb.Empty, error) {
+func (UnimplementedBinaryServer) SetBinary(context.Context, *SetBinaryRequest) (*SetBinaryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetBinary not implemented")
 }
 func (UnimplementedBinaryServer) GetBinary(context.Context, *GetBinaryRequest) (*GetBinaryResponse, error) {

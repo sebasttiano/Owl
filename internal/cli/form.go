@@ -33,6 +33,7 @@ const (
 	holderCharLimit      = 64
 	usernameCharLimit    = 32
 	passwordCharLimit    = 32
+	filePathCharLimit    = 128
 )
 
 var (
@@ -74,6 +75,8 @@ type textForm struct {
 
 func newModel(cli *CLI, resType resType) tea.Model {
 	switch resType {
+	case 3:
+		return newFileModel(cli)
 	case 2:
 		return newTextModel(cli)
 	case 1:
@@ -648,4 +651,108 @@ func (c *credForm) saveCredToServer(creds *models.Creds) tea.Cmd {
 		c.resID = int(resp.Resource.GetId())
 		return c
 	}
+}
+
+type fileForm struct {
+	width, height int
+	description   textinput.Model
+	filePath      textinput.Model
+	cancelled     bool
+	cli           *CLI
+	help          help.Model
+	resID         int
+}
+
+func newFileModel(cli *CLI) *fileForm {
+	m := fileForm{
+		cli:         cli,
+		description: textinput.New(),
+		filePath:    textinput.New(),
+		help:        help.New(),
+	}
+	m.description.CharLimit = descriptionCharLimit
+	m.description.Placeholder = "type your description"
+	m.description.Focus()
+
+	m.filePath.CharLimit = filePathCharLimit
+	m.filePath.Prompt = "File: "
+	m.filePath.Placeholder = "type file path..."
+
+	return &m
+}
+
+func (f *fileForm) createResource() ResourceItem {
+	return NewResourceItem(fileType, f.resID, f.description.Value())
+}
+
+func (f *fileForm) Init() tea.Cmd {
+	return textinput.Blink
+}
+
+// Update implements tea.Model.
+func (f *fileForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var (
+		descriptionCmd tea.Cmd
+		filePathCmd    tea.Cmd
+	)
+	f.description, descriptionCmd = f.description.Update(msg)
+	f.filePath, filePathCmd = f.filePath.Update(msg)
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		f.width = msg.Width
+		f.height = msg.Height
+		f.help.Width = f.width
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keys.Enter):
+			switch {
+			case f.description.Focused():
+				if len(f.description.Value()) > 0 && f.description.Err == nil {
+					f.description.Blur()
+					f.filePath.Focus()
+				}
+			case f.filePath.Focused():
+				if len(f.filePath.Value()) > 0 && f.filePath.Err == nil {
+					f.filePath.Blur()
+				}
+			}
+		case key.Matches(msg, keys.Back):
+			return mainBoard.Update(nil)
+		case key.Matches(msg, keys.Quit):
+			f.cancelled = true
+			return f, tea.Quit
+		case key.Matches(msg, keys.Save):
+			if len(f.description.Value()) > 0 && len(f.filePath.Value()) > 0 {
+				_ = &models.File{
+					Description: f.description.Value(),
+					Path:        f.filePath.Value(),
+				}
+				//return f, f.saveCredToServer(creds)
+				return f, nil
+			}
+		}
+	case *fileForm:
+		return mainBoard.Update(f)
+	case ModelError:
+		return mainBoard.Update(msg)
+	}
+	return f, tea.Batch(descriptionCmd, filePathCmd)
+}
+
+// View implements tea.Model.
+func (f *fileForm) View() string {
+	return form(
+		f.width, f.height,
+		"Credentials",
+		lipgloss.JoinVertical(
+			lipgloss.Left,
+			f.description.View(),
+			strings.Repeat(" ", 64),
+			f.filePath.View(),
+			strings.Repeat(" ", 64),
+			f.help.ShortHelpView(
+				[]key.Binding{keys.Quit, keys.Save, keys.Back},
+			),
+		),
+	)
 }
