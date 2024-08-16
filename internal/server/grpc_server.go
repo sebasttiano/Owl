@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 	"sync"
 	"time"
 
@@ -66,6 +67,7 @@ func (s *GRPSServer) Start(addr string) {
 	listen, err := net.Listen("tcp", addr)
 	if err != nil {
 		logger.Log.Error("failed to allocate tcp socket for gRPC server", zap.Error(err))
+		os.Exit(1)
 	}
 	if err := s.srv.Serve(listen); err != nil {
 		logger.Log.Error("failed to start gRPC server", zap.Error(err))

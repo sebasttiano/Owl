@@ -55,22 +55,22 @@ func (c column) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		c.setSize(msg.Width)
+		c.setSize(msg.Width, msg.Height)
 		c.list.SetSize(msg.Width/margin, msg.Height/2)
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.New):
 			t := newModel(c.cli, c.resType)
-			return t.Update(nil)
+			return t.Update(tea.WindowSizeMsg{Width: msgWidth, Height: msgHeight})
 		case key.Matches(msg, keys.Enter):
 			if len(c.list.VisibleItems()) != 0 {
 				item := c.list.SelectedItem().(ResourceItem)
 				o := newOutputModel(c.cli, &c, item.resID)
 				mod := o.getContent()
 				if mod != nil {
-					return mod, nil
+					return mod.Update(tea.WindowSizeMsg{Width: msgWidth, Height: msgHeight})
 				}
-				return o.Update(nil)
+				return o.Update(tea.WindowSizeMsg{Width: msgWidth, Height: msgHeight})
 			}
 		case key.Matches(msg, keys.Delete):
 			return c, c.DeleteCurrent()
@@ -112,8 +112,10 @@ func (c *column) Set(i int, r ResourceItem) tea.Cmd {
 	return c.list.InsertItem(APPEND, r)
 }
 
-func (c *column) setSize(width int) {
+func (c *column) setSize(width, height int) {
 	c.width = width / margin
+	msgHeight = height
+	msgWidth = width
 }
 
 func (c *column) getStyle() lipgloss.Style {

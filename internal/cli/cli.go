@@ -18,6 +18,11 @@ var (
 	ErrInitGRPSClient      = errors.New("failed to create grpc client")
 )
 
+var (
+	msgHeight,
+	msgWidth int
+)
+
 type CLI struct {
 	Auth   *AuthClient
 	Client *GRPCClient

@@ -100,9 +100,9 @@ func (s *SignBoard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, keys.Enter):
 			switch option := s.list.SelectedItem().(type) {
 			case *signInModel:
-				return option.Update(nil)
+				return option.Update(tea.WindowSizeMsg{Width: s.width, Height: s.height})
 			case *signUpModel:
-				return option.Update(nil)
+				return option.Update(tea.WindowSizeMsg{Width: s.width, Height: s.height})
 			}
 		}
 
